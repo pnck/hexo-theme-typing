@@ -9,7 +9,7 @@
     const ivSalt = encoder.encode('ivsalt');
 
     const encryptedElement = document.getElementById('encrypted-content');
-    if(!encryptedElement){
+    if (!encryptedElement) {
         return;
     }
     const encryptedContent = encryptedElement.innerText;
@@ -75,6 +75,8 @@
         doDecrypt().then((result) => {
             const content = new TextDecoder().decode(result);
             encryptedElement.parentElement.innerHTML = content;
+            // if successfully decrypted, emit a 'DecrptEnded' event
+            document.dispatchEvent(new Event('DecryptEnded', { cancelable: false, bubbles: false }));
         }).catch(e => { /* suppress *//*console.log(e.name)*/ });
     }
     window.onhashchange = decrypt;

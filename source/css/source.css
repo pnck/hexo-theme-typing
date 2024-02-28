@@ -1,6 +1,69 @@
 @import 'typo.css';
 @import 'normalize.css';
 
+/* icon & fold*/
+:root {
+  --icon-rotate: 0deg;
+  --icon-shift: 0px;
+}
+
+%icon-double-arrow {
+  background: url('data:image/svg+xml,%3Csvg%20width%3D%221000%22%20height%3D%221000%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20style%3D%22%26%2310%3B%22%3E%0A%3Cmetadata%3EIcoFont%20Icons%3C/metadata%3E%0A%3Ctitle%3Ethin-double-right%3C/title%3E%0A%3Cglyph%20glyph-name%3D%22thin-double-right%22%20unicode%3D%22%EE%AB%87%22%20horiz-adv-x%3D%221000%22/%3E%0A%3Cpath%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20fill%3D%22%23505050%22%20d%3D%22M466.5%20216.4l16-16.400000000000006%20308.9%20300-308.9%20300-16-16.399999999999977%20292-283.6-292-283.6z%20m-258.5%200l16-16.400000000000006%20308.9%20300-308.9%20300-16-16.399999999999977%20292-283.6-292-283.6z%22/%3E%0A%3C/svg%3E') no-repeat center;
+  background-size: 120%;
+  width: var(--icon-size, 20px);
+  height: var(--icon-size, 20px);
+  transform: translate(0%,30%) rotate(var(--icon-rotate-final)) matrix(0, 0.8, 1, 0, 0, 0);
+  transition: transform 200ms cubic-bezier(0,0,0.25,1.11);
+}
+
+/* fallback */
+.foldable {
+  transition: all 200ms ease;
+}
+
+.foldable.folded {
+  --icon-rotate: -90deg;
+  --icon-shift: 5px;
+}
+
+.foldable::after {
+  content: "";
+  display: none;
+  --icon-rotate-final: calc(var(--icon-rotate) + 0deg);
+  margin-left: var(--icon-shift);
+  @extend %icon-double-arrow;
+}
+
+.foldable.folded:hover , .foldable.expanded {
+  cursor: pointer;
+  --icon-shift: 10px;
+  --icon-rotate: 0deg;
+  padding-left: 10px;
+  letter-spacing: 1px;
+}
+
+.foldable.expanded:hover {
+  --icon-rotate: -180deg;
+  border-left: solid 0.15em #999999;
+  transition: all 100ms ease-in;
+}
+
+.foldable.folded:after, .foldable.expanded:after { 
+  display: inline-block; 
+}
+
+
+
+span.icon-double-arrow.downward {
+  --icon-rotate-final: calc(var(--icon-rotate) + 0deg);
+  @extend %icon-double-arrow;
+}
+
+span.icon-double-arrow.upward {
+  --icon-rotate-final: calc(var(--icon-rotate) + 180deg);
+  @extend %icon-double-arrow;
+}
+/* original */
 
 $black-normal: #505050;
 $black-bold: #111;
@@ -341,6 +404,18 @@ blockquote {
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: bolder;
+  }
+
+  h1, h2 {
+    --icon-size: 50px;
+  }
+
+  h3, h4 {
+    --icon-size: 40px;
+  }
+  
+  h5, h6 {
+    --icon-size: 30px;
   }
 
   .article-title {
