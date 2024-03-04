@@ -28,16 +28,16 @@
   <% if (theme.favicon){ %>
     <%- favicon_tag(theme.favicon) %>
   <% } %>
+
   <%- css('css/typing') %>
+  <%- css('https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-coldark-cold.min.css') %>
+  <%- css('css/prismjs') %>
   <%- css('css/donate') %>
+  
   <% if (theme.icons){ %>
   <%- css('https://cdn.jsdelivr.net/npm/fork-awesome@1/css/fork-awesome.min.css') %>
   <% } %>
   <% if (theme.fancybox){ %>
     <%- css('https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css') %>
   <% } %>
-  <% /*-----  Custom Fonts  ------  */ %> 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>

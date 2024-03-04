@@ -4,7 +4,7 @@ dark: false
 # Header
 menu:
   Home: /
-  # Archives: /archives
+  Archives: /archives
 
 # Your Feed Location
 #rss: /atom.xml
@@ -25,7 +25,7 @@ fb_app_id:
 
 
 # Profile
-nickname: About「The Untitled」
+nickname: About「The Portal」
 description:  |
   这 **不是** 我的个人博客。 
   创建它的目的只是方便放置一些需要公开展示的东西。而它们大部分是需要密码才能看到的。
@@ -81,7 +81,7 @@ valine:
   appId:  #your leancloud appId
   appKey:  #your leancloud appKey
   guest_info: nick,mail,link #valine comment header info
-  placeholder: Just go go # valine comment input placeholder(like: Please leave your footprints )
+  placeholder: Please leave your footprints # valine comment input placeholder(like: Please leave your footprints )
   avatar: mm # gravatar style https://valine.js.org/avatar
   pageSize: 10 # comment list page size
   verify: false # valine verify code (true/false)

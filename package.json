@@ -1,7 +1,7 @@
 {
-  "name": "hexo-theme-typing",
+  "name": "hexo-theme-typing-fork",
   "description": "a pure and fresh Hexo theme.",
-  "version": "1.5.1",
+  "version": "1.6.1",
   "main": "index.js",
   "scripts": {
     "test": "test"
@@ -12,9 +12,9 @@
     "typing"
   ],
   "author": {
-    "name": "geekplux",
-    "email": "geekplux@gmail.com",
-    "url": "github.com/geekplux"
+    "name": "pnck",
+    "email": "pnckxx@pm.me",
+    "url": "https://github.com/pnck"
   },
   "license": "MIT",
   "dependencies": {

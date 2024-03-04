@@ -93,28 +93,3 @@
     <div id="valine_container"></div>
   </section>
 <% } %>
-
-
-<script>
-document.addEventListener ('DOMContentLoaded',function () {
-  (($)=>{
-    const doFolding = ()=>{
-      $('.foldable').next('.fold-content').hide();
-      $('.foldable').off('click');
-      $('.foldable').on('click', function () {
-        if($(this).hasClass('folded')) {
-          $(this).addClass('expanded');
-          $(this).removeClass('folded');
-          $(this).next('.fold-content').slideDown(200);
-        } else if($(this).hasClass('expanded')) {
-          $(this).addClass('folded');
-          $(this).removeClass('expanded');
-          $(this).next('.fold-content').slideUp(200);
-        }
-      });
-    };
-    $(document).ready(doFolding);
-    $(document).on('DecryptEnded', doFolding);
-  })(jQuery);
-});
-</script>
