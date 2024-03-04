@@ -49,21 +49,21 @@
     });
   };
 
-  // actions when page loaded
-  const onLoaded = () => {
+  $(document).ready(() => {
     setTimeout(() => {
       $(".home-body").removeClass("loading");
     }, 100);
     doFold();
-    // load prismjs
-    const loader = document.createElement("script");
-    loader.src =
-      "https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js";
-    document.body.appendChild(loader);
-  };
-
-  $(document).ready(onLoaded);
-  $(document).on("DecryptEnded", onLoaded);
+  });
+  // handle encrypted articles when page gets ready
+  $(document).on("DecryptEnded", () => {
+    doFold();
+    // prismjs highlighting
+    if (typeof Prism === "undefined" || typeof document === "undefined") {
+      return;
+    }
+    Prism.highlightAll();
+  });
 
   // ---------------------
 

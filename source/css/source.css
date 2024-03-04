@@ -71,6 +71,8 @@ monospace;
   --text-color-normal: #505050;
   --text-color-black: #222;
   --text-color-fade: #aaa;
+  --text-color-translucent: #aaa9;
+  --color-scooter: $scooter;
   --bg-color-code-light: #f3f5fa;
   --bg-color-code: #e9e9e9;
 }
@@ -254,7 +256,7 @@ span.icon-double-arrow.upward {
 
 %nav-link-base {
   margin-right: 10px;
-  color: $grey-bold;
+  color: var(--text-color-black);
   padding-bottom: 5px;
   display: inline-block;
   border: 0;
@@ -263,7 +265,7 @@ span.icon-double-arrow.upward {
 body,
 html {
   font-size: 20px;
-  height: 100%;
+  min-height: 100vh;
   color: var(--text-color-normal);
   background: inherit;
   width: 100%;
@@ -304,12 +306,13 @@ h4,
 h5,
 h6,
 .main-nav-link {
-  font-family: $fonts-title
+  color: unset;
+  font-family: $fonts-title;
 }
 
 %a-hover {
-  color: $scooter;
-  border-bottom: 1px solid $scooter;
+  color: var(--color-scooter);
+  border-bottom: 1px solid var(--color-scooter);
   transition: color 100ms linear;
 }
 
@@ -317,7 +320,7 @@ a,
 .typo a {
   /* font-weight: 200; */
   color: unset;
-  border-bottom: 1px dashed $scooter;
+  border-bottom: 1px dashed var(--color-scooter);
   text-decoration: none;
   transition: color 250ms linear;
   cursor: pointer;
@@ -328,21 +331,24 @@ a,
   }
 }
 
-em {
+em,
+.typo em {
   font-style: italic;
+  color: unset;
   /*font-weight: lighter;*/
 }
 
 b,
 strong {
-  font-weight: bold;
+  /*font-weight: bold;*/
+  font-weight: bolder;
   color: unset;
 }
 
 blockquote {
   font-weight: inherit;
-  color: #999;
-  border-left: 2px solid #98cfc4;
+  color: var(--text-color-fade);
+  border-left: 2px solid var(--color-scooter);
   padding-left: 1em;
   margin: 1em 3em 1em -1em;
 
@@ -369,7 +375,7 @@ blockquote {
     @extend %hr-base;
   }
 
-  color: $grey-light;
+  color: var(--text-color-fade);
 
   a,
   b,
@@ -388,7 +394,7 @@ blockquote {
   text-align: center;
   width: 100%;
   font-size: 90%;
-  color: $grey-light;
+  color: var(--text-color-translucent);
 
   /* opacity: .6; */
   li {
@@ -396,7 +402,7 @@ blockquote {
   }
 
   a {
-    color: $grey-bold;
+    color: var(--text-color-fade);
   }
 
   a:hover {
@@ -434,7 +440,7 @@ blockquote {
   justify-content: center;
 
   >* {
-    transition: all 0.6s ease-out;
+    transition: all 1.3s ease-out;
   }
 
   &.loading #footer {
@@ -448,7 +454,6 @@ blockquote {
   #loading-cover {
     top: 0;
     left: 0;
-    opacity: 0;
     pointer-events: none;
     position: fixed;
     width: 100%;
@@ -458,7 +463,6 @@ blockquote {
 
   &.loading #loading-cover {
     background-color: #fff;
-    opacity: 1;
   }
 }
 
@@ -476,7 +480,11 @@ blockquote {
   }
 
   a {
-    border-bottom: solid 1px $grey;
+    border-bottom: solid 1px var(--text-color-black);
+
+    &:hover {
+      border-bottom: solid 1px var(--color-scooter);
+    }
   }
 
   .content {
@@ -556,6 +564,7 @@ blockquote {
 
   a:hover {
     border: 0;
+    color: var(--color-scooter);
   }
 
   .header {
@@ -593,11 +602,12 @@ blockquote {
 
   .archive-article-date {
     font-size: 80%;
-    color: $grey-light;
+    color: var(--text-color-fade);
   }
 
   .archive-article-title {
-    font-weight: 200;
+    font-weight: 300;
+    color: var(--text-color-black);
   }
 
   .archive-year-wrap {
@@ -667,8 +677,22 @@ blockquote {
   h4,
   h5,
   h6 {
+    color: var(--text-color-black);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
     font-weight: 300;
   }
+
+
+  h5,
+  h6 {
+    font-weight: bolder;
+  }
+
 
   h1,
   h2 {
@@ -735,7 +759,7 @@ blockquote {
         }
 
         strong {
-          color: $grey-bold;
+          /*color: $grey-bold;*/
           font-weight: 400;
         }
       }
@@ -802,9 +826,11 @@ blockquote {
       border-bottom: 0;
     }
 
+    /*
     strong {
       color: $grey-bold;
     }
+    */
   }
 
   .article-nav-link-wrap.newer {
@@ -826,10 +852,14 @@ blockquote {
 
   .article-meta {
     font-size: 80%;
-    color: $grey;
+    color: var(--text-color-fade);
 
     a {
-      color: $grey-bold;
+      color: var(--text-color-normal);
+
+      &:hover {
+        color: var(--color-scooter);
+      }
     }
 
     .label {
@@ -888,7 +918,7 @@ blockquote {
 /* set appearance of links */
 .mobile-nav-link {
   background: #fff;
-  border: 2px solid #999;
+  border: 2px solid var(--text-color-fade);
   border-radius: 3px;
   margin: 5px;
   padding: 5px 20px;
@@ -1083,17 +1113,18 @@ $highlight-purple: #8959a8;
       line-height: $code-line-height;
     }
   }
+
+  code:not([class]),
+  code[class=""] {
+    /* inline code */
+    padding: 0 5px;
+    font-family: var(--fonts-mono);
+    font-size: 0.9em;
+    background-color: var(--bg-color-code);
+    border-radius: 3px;
+  }
 }
 
-
-code,
-pre {
-  padding: 0 5px;
-  font-family: var(--fonts-mono);
-  font-size: 0.9em;
-  background-color: var(--bg-color-code);
-  border-radius: 3px;
-}
 
 /* tablet */
 

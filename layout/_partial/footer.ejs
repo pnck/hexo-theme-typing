@@ -6,7 +6,7 @@
       <a href="<%= config.author_link %>" target="_blank"> <%= config.author %> </a>
       <% } else { %>  <%= config.title %> 
       <% } %>  
-      <%= __('powered_by') %> <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme &copy; <a href="https://github.com/geekplux" target="_blank">GeekPlux</a> (modified)
+      <%= __('powered_by') %> <a href="https://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/geekplux/hexo-theme-typing" target="_blank">Typing</a> (forked)
 <% } else if (is_archive()) { %>
   <footer id="footer" class="archive-footer footer">
     <% if (theme.icons){ %>
@@ -31,7 +31,7 @@
       <hr/>
       <!--
       <div id="footerContent" class="footer-content">
-        <%- //markdown(theme.post_footer_content) %> 
+        <%- markdown(theme.post_footer_content) %> 
       --> 
       <div id="copyright" class="copyright">
         &copy; <%= date(new Date(), 'YYYY') %> 
@@ -39,7 +39,7 @@
         <a href="<%= config.author_link %>" target="_blank"> <%= config.author %> </a>
         <% } else { %>  <%= config.title %> 
         <% } %>  
-        <%= __('powered_by') %> <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme &copy; <a href="https://github.com/geekplux" target="_blank">GeekPlux</a> (modified) 
+        <%= __('powered_by') %> <a href="https://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/geekplux/hexo-theme-typing" target="_blank">Typing</a> (forked)
 <% } %>
       </div>
     </footer>
