@@ -1,0 +1,58 @@
+<div id="toc-toggle">
+  <div class="bars"><span></span></div>
+</div>
+<div id="toc-panel" class="typo" style="transform: translateX(-100%)">
+  <%- toc(page.content, {list_number: false}) %>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    (($) => {
+      const tocToggle = $("#toc-toggle");
+      const tocPanel = $("#toc-panel");
+      let state = "hidden";
+      let pendingTimer = null;
+
+      tocToggle.on("mouseover", () => {
+        console.log(state);
+        if (state !== "shown") {
+          tocPanel
+            .css("box-shadow", "6px 0px 20px 0 hsl(0deg 0% 70% / 30%)")
+            .css("transform", "translateX(calc(-100% + 50px))");
+          pendingTimer && clearTimeout(pendingTimer);
+          pendingTimer = null;
+          state = "floating";
+        } // hidden => floating
+      });
+
+      tocToggle.on("mouseleave", () => {
+        if (state === "floating") {
+          tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
+          pendingTimer =
+            (() => {
+              if (state !== "shown") {
+                state = "hidden";
+              }
+            },
+            200 + 400); // mouse moved from tocToggle to tocPanel within 200ms
+        }
+      });
+
+      tocPanel.on("mouseover", () => {
+        if (state === "floating") {
+          // floating => shown
+          tocPanel.css("transform", "translateX(0)");
+          setTimeout(() => {
+            if (state === "floating") {
+              state = "shown";
+            }
+          }, 400); // change state after animation
+        }
+      });
+
+      tocPanel.on("mouseleave", () => {
+        tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
+        state = "hidden";
+      });
+    })(jQuery);
+  });
+</script>
