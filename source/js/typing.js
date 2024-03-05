@@ -12,13 +12,7 @@
           $(this).after('<span class="caption">' + alt + "</span>");
         }
 
-        $(this).wrap(
-          '<a href="' +
-            this.src +
-            '" data-fancybox="gallery" data-caption="' +
-            alt +
-            '"></a>'
-        );
+        $(this).wrap('<a href="' + this.src + '" data-fancybox="gallery" data-caption="' + alt + '"></a>');
       });
 
     $(this)
@@ -59,10 +53,13 @@
   $(document).on("DecryptEnded", () => {
     doFold();
     // prismjs highlighting
-    if (typeof Prism === "undefined" || typeof document === "undefined") {
-      return;
+    if (typeof Prism !== "undefined" && typeof document !== "undefined") {
+      Prism.highlightAll();
     }
-    Prism.highlightAll();
+    // TOC
+    if (typeof window.resetTOC !== "undefined" && typeof document !== "undefined") {
+      window.resetTOC();
+    }
   });
 
   // ---------------------

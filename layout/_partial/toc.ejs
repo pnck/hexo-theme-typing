@@ -1,58 +1,122 @@
 <div id="toc-toggle">
-  <div class="bars"><span></span></div>
+  <div class="toc-toggle-bars"><span></span></div>
 </div>
-<div id="toc-panel" class="typo" style="transform: translateX(-100%)">
-  <%- toc(page.content, {list_number: false}) %>
-</div>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    (($) => {
-      const tocToggle = $("#toc-toggle");
-      const tocPanel = $("#toc-panel");
-      let state = "hidden";
-      let pendingTimer = null;
+<div id="toc-panel" class="toc-panel" style="transform: translateX(-100%)">
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      (($) => {
+        const tocToggle = $("#toc-toggle");
+        const tocPanel = $("#toc-panel");
+        let state = "hidden";
+        let pendingTimer = null;
 
-      tocToggle.on("mouseover", () => {
-        // console.log(state);
-        if (state !== "shown") {
-          tocPanel
-            .css("box-shadow", "6px 0px 20px 0 hsl(0deg 0% 70% / 30%)")
-            .css("transform", "translateX(calc(-100% + 50px))");
-          pendingTimer && clearTimeout(pendingTimer);
-          pendingTimer = null;
-          state = "floating";
-        } // hidden => floating
-      });
+        tocToggle.on("mouseover", () => {
+          // console.log(state);
+          if (state !== "shown") {
+            tocPanel
+              .css("box-shadow", "6px 0px 20px 0 hsl(0deg 0% 70% / 30%)")
+              .css("transform", "translateX(calc(-100% + 50px))");
+            pendingTimer && clearTimeout(pendingTimer);
+            pendingTimer = null;
+            state = "floating";
+          } // hidden => floating
+        });
 
-      tocToggle.on("mouseleave", () => {
-        if (state === "floating") {
-          tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
-          pendingTimer =
-            (() => {
-              if (state !== "shown") {
-                state = "hidden";
+        tocToggle.on("mouseleave", () => {
+          if (state === "floating") {
+            tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
+            pendingTimer =
+              (() => {
+                if (state !== "shown") {
+                  state = "hidden";
+                }
+              },
+              200 + 400); // mouse moved from tocToggle to tocPanel within 200ms
+          }
+        });
+
+        tocPanel.on("mouseover", () => {
+          if (state === "floating") {
+            // floating => shown
+            tocPanel.css("transform", "translateX(0)");
+            setTimeout(() => {
+              if (state === "floating") {
+                state = "shown";
               }
-            },
-            200 + 400); // mouse moved from tocToggle to tocPanel within 200ms
-        }
-      });
+            }, 400); // change state after animation
+          }
+        });
 
-      tocPanel.on("mouseover", () => {
-        if (state === "floating") {
-          // floating => shown
-          tocPanel.css("transform", "translateX(0)");
-          setTimeout(() => {
-            if (state === "floating") {
-              state = "shown";
+        tocPanel.on("mouseleave", () => {
+          tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
+          state = "hidden";
+        });
+
+        $(document).ready(() => {
+          window.resetTOC = () => {
+            const excludes = new Set($(".article-entry").find("blockquote,pre").find("h1,h2,h3,h4,h5,h6"));
+            const titles = $(".article-entry").find("h1,h2,h3,h4,h5,h6").toArray();
+            const minLevel = Math.min(
+              ...titles.map((title) => {
+                if (excludes.has(title)) {
+                  return 7;
+                }
+                return parseInt(title.tagName[1]);
+              })
+            );
+            tocPanel.children(".toc").remove();
+            const root = $("<ul>").addClass("toc")[0];
+            tocPanel.append(root);
+
+            let cur_level = minLevel;
+            let stack = [root];
+            for (const title of titles) {
+              if (excludes.has(title)) {
+                continue;
+              }
+              const level = parseInt(title.tagName[1]);
+              const addItem = (cur_node) => {
+                const li = $("<li>")
+                  .addClass("toc-item")
+                  .addClass(`toc-level-${level}`)
+                  .append(
+                    $("<a>")
+                      .addClass("toc-link")
+                      .attr("href", `#${title.id}`)
+                      .append($("<span>").addClass("toc-text").text(title.textContent))
+                  )[0];
+                cur_node.append(li);
+                return li;
+              };
+              if (level === cur_level) {
+                const item = addItem(stack[stack.length - 1]);
+              } else if (level > cur_level) {
+                const last = stack[stack.length - 1].lastChild || stack[stack.length - 1];
+                const child = $("<ul>").addClass("toc-child")[0];
+                last.append(child);
+                stack.push(child);
+                cur_level += 1;
+                while (level > cur_level) {
+                  const child = $("<ul>").addClass("toc-child")[0];
+                  stack[stack.length - 1].append(child);
+                  stack.push(child);
+                  cur_level += 1;
+                }
+                addItem(stack[stack.length - 1]);
+              } else {
+                while (level < cur_level) {
+                  stack.pop();
+                  cur_level -= 1;
+                }
+                addItem(stack[stack.length - 1]);
+              }
             }
-          }, 400); // change state after animation
-        }
-      });
+          };
+          window.resetTOC();
+        });
+      })(jQuery);
+    });
+  </script>
 
-      tocPanel.on("mouseleave", () => {
-        tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
-        state = "hidden";
-      });
-    })(jQuery);
-  });
-</script>
+  <%#- toc(page.content, {list_number: false}) %>
+</div>

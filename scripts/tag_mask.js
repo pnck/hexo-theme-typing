@@ -1,12 +1,11 @@
 // {% mask %}
 // {% endmask %}
 
-const { log } = hexo;
 const cheerio = require("cheerio");
 
 function parseTagMask(args, content) {
   const inner = hexo.render.renderSync({ text: content, engine: "markdown" });
-  let doc = cheerio.load(inner, {
+  const doc = cheerio.load(inner, {
     xmlMode: true,
     normalizeWhitespace: true,
     decodeEntities: false,
