@@ -5,6 +5,7 @@ dark: false
 menu:
   Home: /
   Archives: /archives
+  # Tags: /tags
 
 # Your Feed Location
 #rss: /atom.xml
@@ -44,7 +45,8 @@ links:
   # book: /archives/
   # globe: https://github.com/geekplux/hexo-theme-typing
   # twitter: https://twitter.com/
-  # github-alt: https://github.com/
+  # github-alt: https://github.com/pnck
+  # github: https://github.com/pnck
   # youtube-play: https://www.youtube.com/
   # stack-overflow: https://stackoverflow.com/
   # google-plus: https://plus.google.com/

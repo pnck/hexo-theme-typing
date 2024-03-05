@@ -424,6 +424,7 @@ blockquote {
 .footer-links {
   a {
     text-decoration: none;
+    border: none;
   }
 
   font-size: 100%;

@@ -57,6 +57,12 @@
             <%- partial('post/tag') %>
           </li>
         <% } %>
+        <% if (post.portal){ %>
+          <li>
+            <span class="label"><%= __('portal') %>:</span>
+            <%- partial('post/portal',{class_name: 'article-portal'}) %>
+          </li>
+        <% } %>
         <!--
         <hr/>
         -->

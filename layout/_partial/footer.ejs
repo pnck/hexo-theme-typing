@@ -9,7 +9,7 @@
       <%= __('powered_by') %> <a href="https://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/geekplux/hexo-theme-typing" target="_blank">Typing</a> (forked)
 <% } else if (is_archive()) { %>
   <footer id="footer" class="archive-footer footer">
-    <% if (theme.icons){ %>
+    <% if (/*disable links on archive page*/ false && theme.icons){ %>
       <ul class="footer-links">
         <% for (var key in theme.links) { %>
           <li><a href="<%- url_for(theme.links[key]) %>"><span class="fa fa-<%= key %>"></span></a></li>
@@ -21,7 +21,7 @@
     <%- markdown(theme.archive_footer_content) %>
 <% } else {%>
     <footer id="footer" class="post-footer footer">
-      <% if (theme.icons){ %>
+      <% if (/*disable links on post page*/ false && theme.icons){ %>
         <ul class="footer-links">
           <% for (var key in theme.links) { %>
             <li><a href="<%- url_for(theme.links[key]) %>"><span class="fa fa-<%= key %>"></span></a></li>

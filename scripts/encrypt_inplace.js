@@ -36,21 +36,25 @@ hexo.extend.generator.register("custom-encrypt", () => [
   },
 ]);
 
-hexo.extend.filter.register("after_post_render", (data) => {
-  if (data.encrypt) {
-    const password = data.encrypt_pwd || "show";
-    log.debug("encrypt article >> ", data.title);
-    const key = crypto.pbkdf2Sync(password, "ksalt", 1024, 32, "sha256");
-    const iv = crypto.pbkdf2Sync(password, "ivsalt", 512, 12, "sha256");
-    const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
-    log.debug("key=", arrayBufferToHex(key));
-    log.debug("iv=", arrayBufferToHex(iv));
-    // cipher.setAutoPadding(true);
-    let encrypted = cipher.update(data.content, "utf8", "hex");
-    encrypted += cipher.final("hex");
-    encrypted += arrayBufferToHex(cipher.getAuthTag());
-    data.content = `<div id="encrypted-content">${encrypted}</div>`;
-    data.content += `<script data-pjax src="${hexo.config.root}js/__hash_decrypt.js"></script>`;
-  }
-  return data;
-});
+hexo.extend.filter.register(
+  "after_post_render",
+  (data) => {
+    if (data.encrypt) {
+      const password = data.encrypt_pwd || "show";
+      log.debug("encrypt article >> ", data.title);
+      const key = crypto.pbkdf2Sync(password, "ksalt", 1024, 32, "sha256");
+      const iv = crypto.pbkdf2Sync(password, "ivsalt", 512, 12, "sha256");
+      const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+      log.debug("key=", arrayBufferToHex(key));
+      log.debug("iv=", arrayBufferToHex(iv));
+      // cipher.setAutoPadding(true);
+      let encrypted = cipher.update(data.content, "utf8", "hex");
+      encrypted += cipher.final("hex");
+      encrypted += arrayBufferToHex(cipher.getAuthTag());
+      data.content = `<div id="encrypted-content">${encrypted}</div>`;
+      data.content += `<script data-pjax src="${hexo.config.root}js/__hash_decrypt.js"></script>`;
+    }
+    return data;
+  },
+  10
+);
