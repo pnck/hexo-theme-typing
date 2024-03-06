@@ -7,6 +7,22 @@
       (($) => {
         const tocToggle = $("#toc-toggle");
         const tocPanel = $("#toc-panel");
+        const adjustPos = () => {
+          let toggle_left = $("article.article").offset().left - 140;
+          if (toggle_left < 50) {
+            toggle_left = 50;
+          }
+          let panel_right = toggle_left;
+          if (panel_right > tocPanel.width()) {
+            panel_right = tocPanel.width() - 50;
+          }
+          $(":root").css("--toc-toggle-left", toggle_left + "px");
+          $(":root").css("--toc-panel-right", panel_right + "px");
+        };
+        adjustPos();
+        $(window).resize(() => {
+          adjustPos();
+        });
         let state = "hidden";
         let pendingTimer = null;
 
@@ -15,7 +31,7 @@
           if (state !== "shown") {
             tocPanel
               .css("box-shadow", "6px 0px 20px 0 hsl(0deg 0% 70% / 30%)")
-              .css("transform", "translateX(calc(-100% + 50px))");
+              .css("transform", `translateX(calc(-100% + var(--toc-panel-right) - 10px))`);
             pendingTimer && clearTimeout(pendingTimer);
             pendingTimer = null;
             state = "floating";

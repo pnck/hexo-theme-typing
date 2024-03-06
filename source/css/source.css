@@ -11,7 +11,7 @@ $grey-bold: #777;
 $grey-light: #b3b3b3;
 $scooter: #1995a6;
 $content-width: 60%;
-$content-max-width: 700px;
+$content-max-width: 720px;
 $mobile-content-width: 80%;
 
 $dark-bg: #3f3f3f;
@@ -81,16 +81,20 @@ $fonts-monospace: "Source Code Pro", Monaco, Menlo, Consolas, "Courier New", Cou
       line-height: 1.8em;
     }
   }
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 #toc-toggle {
   cursor: pointer;
 
   .toc-toggle-bars {
-    top: 10%;
-    left: 50px;
+    top: 100px;
+    left: var(--toc-toggle-left, 50px);
     position: fixed;
-    transform: translate(0, -50%);
+    /* transform: translate(0, -50%); */
+    transition: all 0.3s ease;
     width: 40px;
   }
 
@@ -148,6 +152,9 @@ $fonts-monospace: "Source Code Pro", Monaco, Menlo, Consolas, "Courier New", Cou
 
   .toc-toggle-cross span {
     transform: scale(0) translateY(-12px) rotate(45deg);
+  }
+  @media (max-width: 768px) {
+    display: none;
   }
 }
 
@@ -900,6 +907,9 @@ blockquote {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    .nickname {
+      color: var(--text-color-translucent);
+    }
   }
 
   /* display links when menu button is clicked */

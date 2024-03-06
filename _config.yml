@@ -26,12 +26,14 @@ fb_app_id:
 
 
 # Profile
-nickname: About「The Portal」
+nickname: "A Misanthrope Portal"   ## About「The Portal」
 description:  |
-  这 **不是** 我的个人博客。 
+  这 **不是** 我的个人博客。
   创建它的目的只是方便放置一些需要公开展示的东西。而它们大部分是需要密码才能看到的。
   如果你从我提供的链接过来，我应该已经附带了密码。你可以在链接后追加 `#<密码>` 来访问。
-  [这里](/password-mechanism.html)是一个例子，你可以借它理解密码的机制，它的访问密码是 `showmethecode` 。
+  [这里](/password-mechanism.html)是一个例子，你可以借它理解密码的机制，
+  它的访问密码是  
+  `showmethecode` 。
   
 
 # Load fontawesome icons? Also see the links option
