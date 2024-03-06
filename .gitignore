@@ -1,5 +1,3 @@
 node_modules
-*.sh
 *.sketch
-package-lock.json
 npm-debug.log
