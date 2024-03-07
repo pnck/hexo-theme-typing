@@ -161,7 +161,7 @@ $fonts-monospace: "Source Code Pro", Monaco, Menlo, Consolas, "Courier New", Cou
 
 /* encrypted */
 #encrypted-content {
-  font-family: $fonts-serif;
+  font-family: var(--fonts-serif);
   font-weight: normal;
   font-style: italic;
   color: var(--text-color-fade);
@@ -289,7 +289,7 @@ input,
 select,
 textarea {
   /* overwrite typo.css */
-  font: 400 1em/1.6 $fonts-sans-serif;
+  font: 400 1em/1.6 var(--fonts-sans-serif);
 }
 
 body,
@@ -316,7 +316,7 @@ h5,
 h6,
 .main-nav-link {
   color: unset;
-  font-family: $fonts-title;
+  font-family: var(--fonts-title);
 }
 
 %a-hover {

@@ -1,5 +1,9 @@
-<div class="category-container">
+<div class="tag-container">
   <%- partial('_partial/header', {}, { cache: true }) %>
-  <hr/>
+  <% if (theme.nav === 'left'){ %>
+    <hr class="header-hr header-hr-left"/>
+  <% } else { %>
+    <hr class="header-hr"/>
+  <% } %>
   <%- partial('_partial/archive', {pagination: config.tag, index: true}) %>
 </div>
