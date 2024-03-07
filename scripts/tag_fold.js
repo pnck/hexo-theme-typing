@@ -1,3 +1,4 @@
+"use strict";
 // {% fold h1 title with space.. %}
 // {% fold inline text foldable %}
 // {% endfold %}
