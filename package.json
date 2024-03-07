@@ -24,13 +24,17 @@
     "typo.css": "^2.1.2"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.17",
+    "autoprefixer": "^10.4.18",
     "cssnano": "^6.0.5",
     "postcss": "^8.4.35",
+    "postcss-advanced-variables": "^3.0.1",
+    "postcss-atroot": "^0.2.4",
     "postcss-cli": "^11.0.0",
     "postcss-extend-rule": "^4.0.0",
     "postcss-import": "^16.0.1",
-    "postcss-nested": "^6.0.1"
+    "postcss-nested": "^6.0.1",
+    "postcss-preset-env": "^9.5.0",
+    "postcss-property-lookup": "^3.0.0"
   },
   "engines": {
     "node": ">=10"

@@ -1,5 +1,6 @@
 @import "typo.css";
 @import "normalize.css";
+@import "prismjs.css";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital@0;1&display=swap");
 
 /* globals */
@@ -184,7 +185,7 @@ $icon-arrow: url("data:image/svg+xml,%3Csvg%20width%3D%221000%22%20height%3D%221
   vertical-align: text-top;
 }
 
-/* fallback */
+/* fold */
 .foldable {
   transition: all 200ms ease;
 }
@@ -230,6 +231,28 @@ span.icon-double-arrow.downward {
 span.icon-double-arrow.upward {
   --icon-rotate-final: calc(var(--icon-rotate) + 180deg);
   @extend %icon-double-arrow;
+}
+
+/* mask */
+.masked,
+.masked :not(hr) {
+  padding: 1px 4px;
+  background-color: var(--text-color-normal);
+  color: var(--text-color-normal) !important;
+  transition: color 0.1s linear;
+  &:hover {
+    color: #fff !important;
+  }
+  a {
+    border: 0;
+    &:hover {
+      border-bottom: 1px solid #fff;
+    }
+  }
+}
+
+.footnotes {
+  font-size: 16px;
 }
 
 /* original */
@@ -669,9 +692,12 @@ blockquote {
     font-weight: 300;
   }
 
-  h5,
-  h6 {
+  h5 {
     font-weight: bolder;
+  }
+
+  h6 {
+    font-weight: 400;
   }
 
   .article-title {

@@ -1,6 +1,12 @@
+PRESETS = postcss-import postcss-extend-rule postcss-advanced-variables postcss-preset-env postcss-atroot postcss-property-lookup postcss-nested autoprefixer
+
 .PHONY: css
 css:
-	./node_modules/.bin/postcss source/css/source.css --use postcss-import precss postcss-extend-rule postcss-nested autoprefixer cssnano --output source/css/typing.css
+	npx -- postcss source/css/source.scss --use $(PRESETS) --output source/css/typing.css
+
+.PHONY: mincss
+mincss:
+	npx -- postcss source/css/source.scss --use $(PRESETS) cssnano --no-map --output source/css/typing.css
 
 .PHONY: copy
 copy:

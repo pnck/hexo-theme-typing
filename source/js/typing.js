@@ -62,9 +62,9 @@
     }
   });
 
-  // ---------------------
-
   $(document).ready(function () {
+    // --------------------- DONATE ---------------------
+    /*
     var QRBox = $("#QRBox");
     var MainBox = $(".MainBox");
     var BTCQR = $("#BTCQR");
@@ -101,6 +101,7 @@
         $("#DonateText,#donateBox,#github").removeClass("blur");
       }, 600);
     });
+*/
 
     // Hide mobile menu when click outside of the menu
     $(document).click(function (event) {
