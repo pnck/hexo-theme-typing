@@ -1,10 +1,21 @@
 <div id="toc-toggle">
   <div class="toc-toggle-bars"><span></span></div>
 </div>
-<div id="toc-panel" class="toc-panel" style="transform: translateX(-100%)">
+<div id="toc-panel" class="toc-panel hidden">
+  <div usage="top-hotzone">
+    <a href="#header"><span>Title</span></a>
+  </div>
+  <div usage="content"></div>
+  <div usage="bottom-hotzone">
+    <a href="#footer"><span>End</span></a>
+  </div>
+
+  <%#- toc(page.content, {list_number: false}) %>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       (($) => {
+        // toc-toggle UX
         const tocToggle = $("#toc-toggle");
         const tocPanel = $("#toc-panel");
         const adjustPos = () => {
@@ -23,51 +34,63 @@
         $(window).resize(() => {
           adjustPos();
         });
-        let state = "hidden";
-        let pendingTimer = null;
+        const _fsmInternal = { state: "hidden", pendingAction: null };
+        const FSM = new Proxy(_fsmInternal, {
+          set: (target, prop, value) => {
+            if (prop === "state") {
+              // console.log(`state ${target.state} => ${value}`);
+              if (value === "hidden") {
+                tocPanel.addClass("hidden").removeClass("floating").removeClass("shown");
+              } else if (value === "floating") {
+                tocPanel.removeClass("hidden").addClass("floating").removeClass("shown");
+              } else if (value === "shown") {
+                tocPanel.removeClass("hidden").removeClass("floating").addClass("shown");
+              }
+              if (value !== target.state) {
+                target.pendingAction && clearTimeout(target.pendingAction);
+                target.pendingAction = null;
+              }
+              target.state = value;
+            }
+            if (prop === "lastActionTimer") {
+              target.pendingAction && clearTimeout(target.pendingAction);
+              target.pendingAction = value;
+            }
+            return Reflect.set(target, prop, value);
+          },
+        });
 
         tocToggle.on("mouseover", () => {
-          // console.log(state);
-          if (state !== "shown") {
-            tocPanel
-              .css("box-shadow", "6px 0px 20px 0 hsl(0deg 0% 70% / 30%)")
-              .css("transform", `translateX(calc(-100% + var(--toc-panel-right) - 10px))`);
-            pendingTimer && clearTimeout(pendingTimer);
-            pendingTimer = null;
-            state = "floating";
+          if (FSM.state !== "shown") {
+            FSM.state = "floating";
           } // hidden => floating
         });
 
+        tocToggle.click(() => {
+          FSM.state = "shown";
+        });
+
         tocToggle.on("mouseleave", () => {
-          if (state === "floating") {
-            tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
-            pendingTimer =
-              (() => {
-                if (state !== "shown") {
-                  state = "hidden";
-                }
-              },
-              200 + 400); // mouse moved from tocToggle to tocPanel within 200ms
+          if (FSM.state === "floating") {
+            FSM.state = "hiding";
+            FSM.pendingAction = setTimeout(() => {
+              FSM.state = "hidden";
+            }, 200); // mouse moved from tocToggle to tocPanel within 200ms
           }
         });
 
-        tocPanel.on("mouseover", () => {
-          if (state === "floating") {
-            // floating => shown
-            tocPanel.css("transform", "translateX(0)");
-            setTimeout(() => {
-              if (state === "floating") {
-                state = "shown";
-              }
-            }, 400); // change state after animation
-          }
+        tocPanel.on("mouseenter", () => {
+          FSM.state = "shown";
         });
 
         tocPanel.on("mouseleave", () => {
-          tocPanel.css("box-shadow", "0").css("transform", "translateX(-100%)");
-          state = "hidden";
+          FSM.state = "leaving";
+          FSM.pendingAction = setTimeout(() => {
+            FSM.state = "hidden";
+          }, 500); // set hidden if mouse had left for 500ms
         });
 
+        // add toc content
         $(document).ready(() => {
           window.resetTOC = () => {
             const excludes = new Set($(".article-entry").find("blockquote,pre").find("h1,h2,h3,h4,h5,h6"));
@@ -80,9 +103,9 @@
                 return parseInt(title.tagName[1]);
               })
             );
-            tocPanel.children(".toc").remove();
+            tocPanel.children("[usage=content]").children(".toc").remove();
             const root = $("<ul>").addClass("toc")[0];
-            tocPanel.append(root);
+            tocPanel.children("[usage=content]").append(root);
 
             let cur_level = minLevel;
             let stack = [root];
@@ -130,9 +153,28 @@
           };
           window.resetTOC();
         });
+
+        // add scroll helper to "-- end --" button
+        const bottomHotzone = tocPanel.children("[usage=bottom-hotzone]");
+        let bottomRelativePos;
+        let resizeObserver;
+        bottomHotzone.on("mouseover", () => {
+          bottomRelativePos = bottomHotzone[0].getBoundingClientRect().bottom - window.innerHeight;
+          resizeObserver = new ResizeObserver(() => {
+            if (bottomRelativePos === null /*|| Math.abs(bottomRelativePos) > 10*/) {
+              return;
+            }
+            const curRelativePos = bottomHotzone[0].getBoundingClientRect().bottom - window.innerHeight;
+            const p = tocPanel[0];
+            p.scrollTop += curRelativePos - bottomRelativePos;
+          });
+          resizeObserver.observe(tocPanel.children("[usage=bottom-hotzone]")[0]);
+        });
+        bottomHotzone.on("mouseleave", () => {
+          bottomRelativePos = null;
+          delete resizeObserver;
+        });
       })(jQuery);
     });
   </script>
-
-  <%#- toc(page.content, {list_number: false}) %>
 </div>
