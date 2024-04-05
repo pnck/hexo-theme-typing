@@ -1,11 +1,23 @@
 <% if (pagination == 2){ %>
   <% page.posts.each(function(post){ %>
+    <% const tags = new Set(post.tags.data.map((tag) => tag.name)); %>
+    <% if (tags.has('hidden') || tags.has('Hidden')) { %>
+      <% return; %>
+    <% } %>
     <%- partial('article', {post: post, index: true}) %>
   <% }) %>
 <% } else { %>
   <% var last; %>
   <% page.posts.each(function(post, i){ %>
-    <% var year = post.date.year(); %>
+    <% const year = post.date.year(); %>
+    <% const tags = new Set(post.tags.data.map((tag) => tag.name)); %>
+    <%
+    /* Hide posts who have 'hidden' tag */
+    /* < %= `---> date=${post.date} tags=${JSON.stringify([...tags])}` % > */
+    %>
+    <% if (tags.has('hidden') || tags.has('Hidden')) { %>
+      <% return; %>
+    <% } %>
     <% if (last != year){ %>
       <% if (last != null){ %>
         </div></section>
