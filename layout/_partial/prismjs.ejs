@@ -1,10 +1,14 @@
-<!-- PrismJs CDN -->
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/components/prism-core.min.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/normalize-whitespace/prism-normalize-whitespace.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/line-numbers/prism-line-numbers.min.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/toolbar/prism-toolbar.min.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/show-language/prism-show-language.min.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/autolinker/prism-autolinker.min.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js') %>
-<!-- End of PrismJs CDN -->
+<% if (page.content/* is post */) { %>
+  <!-- PrismJs CDN -->
+  <%- css('https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-coldark-cold.min.css') %>
+  <%#- css('css/prismjs') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/components/prism-core.min.js') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/normalize-whitespace/prism-normalize-whitespace.js') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/line-numbers/prism-line-numbers.min.js') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/toolbar/prism-toolbar.min.js') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/show-language/prism-show-language.min.js') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/autolinker/prism-autolinker.min.js') %>
+  <%- js('https://cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js') %>
+  <!-- End of PrismJs CDN -->
+<% } %>

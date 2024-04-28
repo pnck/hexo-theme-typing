@@ -76,19 +76,12 @@
 <% } %>
 
 <%- js('https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js') %>
-<%- js('https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js') %>
 
 <% if (theme.fancybox){ %>
   <%- js('https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js') %>
 <% } %>
 
-
-<%- partial('_partial/prismjs') %>
-
+<%- js('https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js') %>
 
 <%- js('js/typing') %>
-<!--[if lt IE 9]><%- js('https://cdn.jsdelivr.net/npm/html5shiv@3/dist/html5shiv.min.js') %><![endif]-->
-<%- partial('google-analytics', {}, { cache: true }) %>
-
-<!-- UMami Self-Host Analytics -->
-<script async src="https://umami.p-vm.dev/script.js" data-website-id="26dd5264-c0d5-4094-b2e9-3eb7698de914"></script>
+<%- partial('_partial/prismjs') %>

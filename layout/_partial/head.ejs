@@ -30,8 +30,6 @@
   <% } %>
 
   <%- css('css/typing') %>
-  <%- css('https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-coldark-cold.min.css') %>
-  <%#- css('css/prismjs') %>
   <%#- css('css/donate') %>
   
   <% if (theme.icons){ %>
@@ -40,4 +38,15 @@
   <% if (theme.fancybox){ %>
     <%- css('https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css') %>
   <% } %>
+    
+  <!-- UMami Self-Host Analytics -->
+  <script>
+    if (!(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      var script = document.createElement('script');
+      script.src = 'https://umami.p-vm.dev/script.js';
+      script.async = true;
+      script.dataset.websiteId = '26dd5264-c0d5-4094-b2e9-3eb7698de914';
+      document.head.appendChild(script);
+    }
+  </script>
 </head>
