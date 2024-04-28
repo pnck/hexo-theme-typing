@@ -45,11 +45,19 @@ $fonts-monospace: "Source Code Pro", Monaco, Menlo, Consolas, "Courier New", Cou
   --text-color-black: #222;
   --text-color-fade: #aaa;
   --text-color-translucent: #aaa9;
+  --text-default-font-size: 20px;
+  --text-article-font-size: 18px;
+  --text-page-font-size: 20px;
   --color-scooter: $scooter;
   --bg-color-code-light: #f3f5fa;
   --bg-color-code: #e9e9e9;
   --dark-text-color: #d8d8d8;
   --dark-bg-color: #3f3f3f;
+}
+
+/* article - main body */
+.article-inner{
+  font-size: var(--text-article-font-size);
 }
 
 /* encrypted */
@@ -168,7 +176,7 @@ span.icon-double-arrow.upward {
 
 body,
 html {
-  font-size: 20px;
+  font-size: var(--text-default-font-size);
   min-height: 100vh;
   color: var(--text-color-normal);
   background: inherit;
@@ -336,6 +344,10 @@ blockquote {
   li {
     margin: 0 5px;
   }
+
+  .fa { /* linked icon, front page */
+    font-size: 24px;
+  }
 }
 
 .home-body {
@@ -400,7 +412,7 @@ blockquote {
 
   h1,
   strong {
-    color: $black-light;
+    color: var(--text-color-black);
   }
 
   hr {
