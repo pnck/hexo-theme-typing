@@ -1,0 +1,494 @@
+/* Media Player & Audio Clip Styles
+ * 使用 typing 主题的 CSS 变量保持配色一致
+ * 主题色: var(--color-scooter)
+ * 背景: var(--bg-color-code-light)
+ * 边框: var(--bg-color-code)
+ * 文字: var(--text-color-black), var(--text-color-fade)
+ */
+
+/* ============================================
+   Plyr Container - 媒体播放器容器
+   ============================================ */
+.plyr-container {
+  margin: 1.5em 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* 视频播放器容器 - 整体卡片 */
+.plyr-container[data-type="video"] {
+  background: var(--bg-color);
+  border: 1px solid var(--text-color-fade);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.plyr-container[data-type="video"]:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border-color: var(--color-scooter);
+  transform: translateY(-1px);
+}
+
+/* 音频播放器标题 */
+.plyr-container[data-type="audio"] .plyr-title {
+  padding: 8px 12px;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--text-color-black);
+  margin-bottom: 8px;
+}
+
+/* 视频播放器标题 */
+.plyr-container[data-type="video"] .plyr-title {
+  padding: 0 0 12px 0;
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--text-color-black);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--text-color-fade);
+}
+
+.plyr-container[data-type="video"] .plyr-title::before {
+  /*content: "▶";*/
+  font-size: 0.7em;
+  color: var(--color-scooter);
+}
+
+/* Plyr 主题自定义 */
+.plyr-container .plyr {
+  --plyr-color-main: var(--color-scooter);
+  background: transparent;
+}
+
+/* 视频播放器 */
+.plyr-container .plyr--video {
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+  margin-top: 12px;
+}
+
+/* 音频播放器 - 优雅简洁样式 */
+.plyr-container .plyr--audio {
+  border-radius: 6px;
+  overflow: visible;
+}
+
+/* 音频播放器控制栏样式 */
+.plyr-container .plyr--audio .plyr__controls {
+  background: var(--bg-color);
+  border: 1px solid var(--text-color-fade);
+  border-radius: 6px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.plyr-container .plyr--audio .plyr__controls:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-scooter);
+}
+
+/* Plyr 菜单确保正确显示 */
+.plyr-container .plyr__menu {
+  z-index: 100 !important; /* 确保菜单在最上层 */
+}
+
+/* ============================================
+   错误状态样式
+   ============================================ */
+.plyr-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background: var(--bg-color-code-light);
+  border: 1px dashed var(--text-color-fade);
+  border-radius: 6px;
+  margin-top: 12px;
+  min-height: 200px;
+}
+
+.plyr-error-icon {
+  font-size: 3em;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.plyr-error-message {
+  color: var(--text-color-fade);
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.media-error {
+  padding: 20px;
+  background: var(--bg-color-code-light);
+  border: 1px dashed #e74c3c;
+  border-radius: 6px;
+  color: #e74c3c;
+  text-align: center;
+  margin: 1em 0;
+}
+
+/* ============================================
+   Audio Pool - 隐藏的音频元素容器
+   ============================================ */
+#audio-pool {
+  display: none !important;
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ============================================
+   Audio Clip - 行内音频片段
+   ============================================ */
+.audio-clip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0px 6px 0px 6px;
+  margin: 2px 2px;
+  background: var(--bg-color-code-light);
+  border: 1px solid var(--bg-color-code);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.92em;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  text-decoration: none !important;
+}
+
+.audio-clip:hover {
+  background: #fff;
+  border-color: var(--color-scooter);
+  color: var(--color-scooter);
+}
+
+.audio-clip:focus {
+  outline: 2px solid var(--color-scooter);
+  outline-offset: 1px;
+  /*opacity: 0.4;*/
+}
+
+.audio-clip:active {
+  transform: scale(0.98);
+}
+
+/* 播放图标 */
+.audio-clip-icon {
+  font-size: 0.85em;
+  /*line-height: 1;*/
+  transition: transform 0.2s ease;
+}
+
+.audio-clip-icon.pause-icon {
+  display: none;
+}
+
+.audio-clip:hover .audio-clip-icon {
+  transform: scale(1.1);
+}
+
+/* 频谱条柱动画 */
+.audio-clip-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 12px;
+  margin: 0 2px;
+}
+
+.audio-clip-bars .bar {
+  width: 2px;
+  background: var(--text-color-normal);
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+.audio-clip-bars .bar:nth-child(1) { height: 40%; }
+.audio-clip-bars .bar:nth-child(2) { height: 70%; }
+.audio-clip-bars .bar:nth-child(3) { height: 50%; }
+.audio-clip-bars .bar:nth-child(4) { height: 80%; }
+
+.audio-clip:hover .audio-clip-bars .bar {
+  background: var(--color-scooter);
+}
+
+/* 播放状态 */
+.audio-clip.playing {
+  background: var(--color-scooter);
+  border-color: var(--color-scooter);
+  color: #fff;
+}
+
+.audio-clip.playing .audio-clip-icon.play-icon {
+  display: none;
+}
+
+.audio-clip.playing .audio-clip-icon.pause-icon {
+  display: none;
+}
+
+.audio-clip.playing .audio-clip-bars .bar {
+  background: rgba(255, 255, 255, 0.9);
+  animation: audioClipBars 0.8s ease-in-out infinite;
+}
+
+.audio-clip.playing .audio-clip-bars .bar:nth-child(1) { animation-delay: 0s; }
+.audio-clip.playing .audio-clip-bars .bar:nth-child(2) { animation-delay: 0.2s; }
+.audio-clip.playing .audio-clip-bars .bar:nth-child(3) { animation-delay: 0.4s; }
+.audio-clip.playing .audio-clip-bars .bar:nth-child(4) { animation-delay: 0.1s; }
+
+@keyframes audioClipBars {
+  0%, 100% {
+    height: 30%;
+  }
+  50% {
+    height: 100%;
+  }
+}
+
+/* 暂停状态 */
+.audio-clip.paused {
+  background: #f0f0f0;
+  border-color: var(--color-scooter);
+  color: var(--color-scooter);
+}
+
+.audio-clip.paused .audio-clip-icon.play-icon {
+  display: none;
+}
+
+.audio-clip.paused .audio-clip-icon.pause-icon {
+  display: inline;
+}
+
+/* 暂停时隐藏频谱条 */
+.audio-clip.paused .audio-clip-bars {
+  display: none;
+}
+
+.audio-clip.paused .audio-clip-duration {
+  color: var(--color-scooter);
+}
+
+/* 片段文本 */
+.audio-clip-text {
+  transition: color 0.2s ease;
+}
+
+/* 时长显示 */
+.audio-clip-duration {
+  color: #999;
+  font-size: 0.85em;
+  font-family: 'Source Code Pro', Consolas, monospace;
+  margin-left: 2px;
+  transition: color 0.2s ease;
+}
+
+.audio-clip:hover .audio-clip-duration {
+  color: var(--color-scooter);
+}
+
+.audio-clip.playing .audio-clip-duration {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* 错误状态 */
+.audio-clip-error {
+  color: #cc3333;
+  font-size: 0.9em;
+}
+
+/* ============================================
+   Audio Clip Volume Control - 片段音量控制器（全局单例）
+   ============================================ */
+.audio-clip-volume-control {
+  position: absolute;
+  z-index: 10000;
+  background: var(--bg-color);
+  border: 1px solid var(--text-color-fade);
+  border-radius: 6px;
+  padding: 8px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  background-color: #ffffff !important;
+  cursor: default;
+}
+
+/* 状态：hidden / waiting - 不可见 */
+.audio-clip-volume-control.hidden,
+.audio-clip-volume-control.waiting {
+  opacity: 0;
+}
+
+/* 状态：showing - 渐显动画中 */
+.audio-clip-volume-control.showing {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* 状态：show / holding - 完全显示 */
+.audio-clip-volume-control.show,
+.audio-clip-volume-control.holding {
+  opacity: 1;
+}
+
+/* 状态：hiding - 渐隐动画中 */
+.audio-clip-volume-control.hiding {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* 小三角箭头 - 指向上方 */
+.audio-clip-volume-control::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: var(--text-color-fade);
+}
+
+.audio-clip-volume-control::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: #ffffff;
+  z-index: 1;
+  margin-bottom: -1px;
+}
+
+/* 音量滑动条容器 */
+.audio-clip-volume-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 音量图标 - 使用SVG（Plyr风格）*/
+.audio-clip-volume-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  flex-shrink: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><path fill="%23303030" d="M15.6 3.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4C15.4 5.9 16 7.4 16 9c0 1.6-.6 3.1-1.8 4.3-.4.4-.4 1 0 1.4.2.2.5.3.7.3.3 0 .5-.1.7-.3C17.1 13.2 18 11.2 18 9s-.9-4.2-2.4-5.7z"/><path fill="%23303030" d="M11.282 5.282a.909.909 0 0 0 0 1.273A3.925 3.925 0 0 1 12.364 9a3.925 3.925 0 0 1-1.082 2.445.909.909 0 0 0 0 1.273c.182.181.409.273.636.273.228 0 .455-.092.637-.273A5.76 5.76 0 0 0 14.09 9a5.76 5.76 0 0 0-1.536-3.718.908.908 0 0 0-1.272 0z"/><path fill="%23303030" d="M9.116 4.633A.54.54 0 0 0 9 4.659L6 7H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2l3 2.341a.54.54 0 0 0 .116.026.5.5 0 0 0 .5-.5V5.133a.5.5 0 0 0-.5-.5z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 音量滑动条 */
+.audio-clip-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px;
+  height: 4px;
+  background: var(--bg-color-code);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.audio-clip-volume-slider::-webkit-slider-track {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-color-code);
+  border-radius: 2px;
+}
+
+.audio-clip-volume-slider::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-color-code);
+  border-radius: 2px;
+}
+
+.audio-clip-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--color-scooter);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.audio-clip-volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--color-scooter);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.audio-clip-volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(75, 170, 190, 0.2);
+}
+
+.audio-clip-volume-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(75, 170, 190, 0.2);
+}
+
+/* 音量值显示 */
+.audio-clip-volume-value {
+  font-size: 12px;
+  font-family: 'Source Code Pro', Consolas, monospace;
+  color: var(--text-color-black);
+  min-width: 28px;
+  text-align: right;
+  user-select: none;
+}
+
+/* 填充进度条效果（使用渐变背景模拟）*/
+.audio-clip-volume-slider {
+  background: linear-gradient(to right, 
+    var(--color-scooter) 0%, 
+    var(--color-scooter) var(--volume-percent, 100%), 
+    var(--bg-color-code) var(--volume-percent, 100%), 
+    var(--bg-color-code) 100%
+  );
+}
+
+/* ============================================
+   响应式适配
+   ============================================ */
+@media only screen and (max-width: 640px) {
+  .audio-clip {
+    padding: 2px 6px 2px 4px;
+    font-size: 0.88em;
+  }
+  
+  .audio-clip-bars {
+    display: none;
+  }
+}
+
+/* ============================================
+   暗色模式支持（如果未来需要）
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  /* 暂时不启用，保持与 typing 主题一致 */
+}
