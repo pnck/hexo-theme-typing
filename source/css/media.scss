@@ -337,24 +337,29 @@
   &.hidden,
   &.waiting {
     opacity: 0;
+    z-index: -1 !important;
+    pointer-events: none;
   }
   
   /* 状态：showing - 渐显动画中 */
   &.showing {
     opacity: 1;
     transition: opacity var(--volume-control-transition, 300ms) ease;
+    pointer-events: none;
   }
   
   /* 状态：show / holding - 完全显示 */
   &.show,
   &.holding {
     opacity: 1;
+    pointer-events: auto;
   }
   
   /* 状态：hiding - 渐隐动画中 */
   &.hiding {
     opacity: 0;
     transition: opacity var(--volume-control-transition, 300ms) ease;
+    pointer-events: none;
   }
 
   

@@ -257,6 +257,12 @@
         }
       });
       
+      // 窗口失去焦点时强制隐藏
+      window.addEventListener('blur', () => {
+        VolumeControlFSM.cancel();
+        VolumeControlFSM.setState('hidden');
+      });
+      
       this._globalVolumeControl = volumeControl;
       return volumeControl;
     },
