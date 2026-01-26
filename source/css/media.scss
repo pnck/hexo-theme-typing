@@ -167,37 +167,43 @@
   vertical-align: middle;
   user-select: none;
   text-decoration: none !important;
-}
-
-.audio-clip:hover {
-  background: #fff;
-  border-color: var(--color-scooter);
-  color: var(--color-scooter);
-}
-
-.audio-clip:focus {
-  outline: 2px solid var(--color-scooter);
-  outline-offset: 1px;
-  /*opacity: 0.4;*/
-}
-
-.audio-clip:active {
-  transform: scale(0.98);
+  
+  &:hover {
+    background: #fff;
+    border-color: var(--color-scooter);
+    color: var(--color-scooter);
+    
+    .audio-clip-icon {
+      transform: scale(1.1);
+    }
+    
+    .audio-clip-bars .bar {
+      background: var(--color-scooter);
+    }
+    
+    .audio-clip-duration {
+      color: var(--color-scooter);
+    }
+  }
+  
+  &:focus {
+    outline: 2px solid var(--color-scooter);
+    outline-offset: 1px;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 /* 播放图标 */
 .audio-clip-icon {
   font-size: 0.85em;
-  /*line-height: 1;*/
   transition: transform 0.2s ease;
-}
-
-.audio-clip-icon.pause-icon {
-  display: none;
-}
-
-.audio-clip:hover .audio-clip-icon {
-  transform: scale(1.1);
+  
+  &.pause-icon {
+    display: none;
+  }
 }
 
 /* 频谱条柱动画 */
@@ -207,22 +213,18 @@
   gap: 1px;
   height: 12px;
   margin: 0 2px;
-}
-
-.audio-clip-bars .bar {
-  width: 2px;
-  background: var(--text-color-normal);
-  border-radius: 1px;
-  transition: background 0.2s ease;
-}
-
-.audio-clip-bars .bar:nth-child(1) { height: 40%; }
-.audio-clip-bars .bar:nth-child(2) { height: 70%; }
-.audio-clip-bars .bar:nth-child(3) { height: 50%; }
-.audio-clip-bars .bar:nth-child(4) { height: 80%; }
-
-.audio-clip:hover .audio-clip-bars .bar {
-  background: var(--color-scooter);
+  
+  .bar {
+    width: 2px;
+    background: var(--text-color-normal);
+    border-radius: 1px;
+    transition: background 0.2s ease;
+    
+    &:nth-child(1) { height: 40%; }
+    &:nth-child(2) { height: 70%; }
+    &:nth-child(3) { height: 50%; }
+    &:nth-child(4) { height: 80%; }
+  }
 }
 
 /* 播放状态 */
@@ -230,25 +232,28 @@
   background: var(--color-scooter);
   border-color: var(--color-scooter);
   color: #fff;
+  
+  .audio-clip-icon {
+    &.play-icon,
+    &.pause-icon {
+      display: none;
+    }
+  }
+  
+  .audio-clip-bars .bar {
+    background: rgba(255, 255, 255, 0.9);
+    animation: audioClipBars 0.8s ease-in-out infinite;
+    
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+    &:nth-child(4) { animation-delay: 0.1s; }
+  }
+  
+  .audio-clip-duration {
+    color: rgba(255, 255, 255, 0.85);
+  }
 }
-
-.audio-clip.playing .audio-clip-icon.play-icon {
-  display: none;
-}
-
-.audio-clip.playing .audio-clip-icon.pause-icon {
-  display: none;
-}
-
-.audio-clip.playing .audio-clip-bars .bar {
-  background: rgba(255, 255, 255, 0.9);
-  animation: audioClipBars 0.8s ease-in-out infinite;
-}
-
-.audio-clip.playing .audio-clip-bars .bar:nth-child(1) { animation-delay: 0s; }
-.audio-clip.playing .audio-clip-bars .bar:nth-child(2) { animation-delay: 0.2s; }
-.audio-clip.playing .audio-clip-bars .bar:nth-child(3) { animation-delay: 0.4s; }
-.audio-clip.playing .audio-clip-bars .bar:nth-child(4) { animation-delay: 0.1s; }
 
 @keyframes audioClipBars {
   0%, 100% {
@@ -264,28 +269,37 @@
   background: #f0f0f0;
   border-color: var(--color-scooter);
   color: var(--color-scooter);
-}
-
-.audio-clip.paused .audio-clip-icon.play-icon {
-  display: none;
-}
-
-.audio-clip.paused .audio-clip-icon.pause-icon {
-  display: inline;
-}
-
-/* 暂停时隐藏频谱条 */
-.audio-clip.paused .audio-clip-bars {
-  display: none;
-}
-
-.audio-clip.paused .audio-clip-duration {
-  color: var(--color-scooter);
+  
+  .audio-clip-icon {
+    &.play-icon {
+      display: none;
+    }
+    &.pause-icon {
+      display: inline;
+    }
+  }
+  
+  .audio-clip-bars {
+    display: none;
+  }
+  
+  .audio-clip-duration {
+    color: var(--color-scooter);
+  }
 }
 
 /* 片段文本 */
 .audio-clip-text {
   transition: color 0.2s ease;
+  user-select: text !important;
+}
+
+/* 隐藏的括号（复制时可见） */
+.audio-clip-title-bracket-left,
+.audio-clip-title-bracket-right {
+  opacity: 0;
+  font-size: 0;
+  user-select: text;
 }
 
 /* 时长显示 */
@@ -295,14 +309,6 @@
   font-family: 'Source Code Pro', Consolas, monospace;
   margin-left: 2px;
   transition: color 0.2s ease;
-}
-
-.audio-clip:hover .audio-clip-duration {
-  color: var(--color-scooter);
-}
-
-.audio-clip.playing .audio-clip-duration {
-  color: rgba(255, 255, 255, 0.85);
 }
 
 /* 错误状态 */
@@ -326,53 +332,54 @@
   transform: translateX(-50%);
   background-color: #ffffff !important;
   cursor: default;
-}
+  
+  /* 状态：hidden / waiting - 不可见 */
+  &.hidden,
+  &.waiting {
+    opacity: 0;
+  }
+  
+  /* 状态：showing - 渐显动画中 */
+  &.showing {
+    opacity: 1;
+    transition: opacity var(--volume-control-transition, 300ms) ease;
+  }
+  
+  /* 状态：show / holding - 完全显示 */
+  &.show,
+  &.holding {
+    opacity: 1;
+  }
+  
+  /* 状态：hiding - 渐隐动画中 */
+  &.hiding {
+    opacity: 0;
+    transition: opacity var(--volume-control-transition, 300ms) ease;
+  }
 
-/* 状态：hidden / waiting - 不可见 */
-.audio-clip-volume-control.hidden,
-.audio-clip-volume-control.waiting {
-  opacity: 0;
-}
-
-/* 状态：showing - 渐显动画中 */
-.audio-clip-volume-control.showing {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-/* 状态：show / holding - 完全显示 */
-.audio-clip-volume-control.show,
-.audio-clip-volume-control.holding {
-  opacity: 1;
-}
-
-/* 状态：hiding - 渐隐动画中 */
-.audio-clip-volume-control.hiding {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* 小三角箭头 - 指向上方 */
-.audio-clip-volume-control::after {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-bottom-color: var(--text-color-fade);
-}
-
-.audio-clip-volume-control::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-bottom-color: #ffffff;
-  z-index: 1;
-  margin-bottom: -1px;
+  
+  /* 小三角箭头 - 指向上方 */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: var(--text-color-fade);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: #ffffff;
+    z-index: 1;
+    margin-bottom: -1px;
+  }
 }
 
 /* 音量滑动条容器 */

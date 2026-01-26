@@ -6,8 +6,12 @@
   'use strict';
 
   // 常量配置
-  const VOLUME_CONTROL_WAIT_DELAY = 200;
+  const VOLUME_CONTROL_SHOW_DELAY = 500;      // 显示前的等待时间（较长）
+  const VOLUME_CONTROL_HIDE_DELAY = 100;      // 隐藏前的等待时间（较短）
   const VOLUME_CONTROL_TRANSITION = 300;
+  
+  // 设置CSS变量以控制动画时长
+  document.documentElement.style.setProperty('--volume-control-transition', VOLUME_CONTROL_TRANSITION + 'ms');
 
   // 工具函数
   function formatTime(seconds) {
@@ -86,25 +90,34 @@
 
     _bindEvents() {
       if (!this.audioElement._boundEvents) {
-        this.audioElement.addEventListener('timeupdate', this._handleTimeUpdate.bind(this));
-        this.audioElement.addEventListener('ended', this._handleEnded.bind(this));
-        this.audioElement._boundEvents = true;
+        const audioElement = this.audioElement;
+        
+        // 事件处理器需要查找当前活动的 ClipState
+        audioElement.addEventListener('timeupdate', () => {
+          const activeClipState = audioElement._activeClipState;
+          if (activeClipState && activeClipState.state === 'playing' && 
+              audioElement.currentTime >= activeClipState.endTime) {
+            activeClipState.stop();
+          }
+        });
+        
+        audioElement.addEventListener('ended', () => {
+          const activeClipState = audioElement._activeClipState;
+          if (activeClipState && activeClipState.state === 'playing') {
+            activeClipState.stop();
+          }
+        });
+        
+        audioElement._boundEvents = true;
       }
+      // 标记当前活动的 ClipState
+      this.audioElement._activeClipState = this;
     }
 
     _unbindEvents() {
-      // 事件保持绑定，只是通过state判断是否处理
-    }
-
-    _handleTimeUpdate() {
-      if (this.state === 'playing' && this.audioElement.currentTime >= this.endTime) {
-        this.stop();
-      }
-    }
-
-    _handleEnded() {
-      if (this.state === 'playing') {
-        this.stop();
+      // 清除活动标记
+      if (this.audioElement._activeClipState === this) {
+        this.audioElement._activeClipState = null;
       }
     }
 
@@ -125,7 +138,7 @@
     volumes: new Map(),
 
     getVolume(audioElementId) {
-      return this.volumes.get(audioElementId) || 1.0;
+      return this.volumes.has(audioElementId) ? this.volumes.get(audioElementId) : 1.0;
     },
 
     setVolume(audioElementId, volume) {
@@ -182,7 +195,7 @@
           this.cancel();
           try {
             this.setState('waiting');
-            await this.delay(VOLUME_CONTROL_WAIT_DELAY);
+            await this.delay(VOLUME_CONTROL_SHOW_DELAY);
             this.setState('showing');
             await this.delay(VOLUME_CONTROL_TRANSITION);
             this.setState(volumeControl.matches(':hover') ? 'holding' : 'show');
@@ -194,7 +207,7 @@
         async runHideFlow() {
           this.cancel();
           try {
-            await this.delay(VOLUME_CONTROL_WAIT_DELAY);
+            await this.delay(VOLUME_CONTROL_HIDE_DELAY);
             this.setState('hiding');
             await this.delay(VOLUME_CONTROL_TRANSITION);
             this.setState('hidden');
