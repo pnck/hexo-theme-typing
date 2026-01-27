@@ -99,6 +99,19 @@
   z-index: 100 !important; /* 确保菜单在最上层 */
 }
 
+/* 时间显示 - 可点击切换正向/倒计时 */
+.plyr-container .plyr__time {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.plyr-container .plyr__time:hover {
+  background-color: var(--plyr-color-main);
+  opacity: 1;
+  border-radius: var(--plyr-control-radius, 4px);
+}
+
 /* ============================================
    错误状态样式
    ============================================ */

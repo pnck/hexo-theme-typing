@@ -2,50 +2,50 @@
  * Media Player & Clip Manager
  * 管理页面中的媒体播放器（使用 Plyr）和音频片段
  */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
   // 常量配置
-  const VOLUME_CONTROL_SHOW_DELAY = 500;      // 显示前的等待时间（较长）
-  const VOLUME_CONTROL_HIDE_DELAY = 100;      // 隐藏前的等待时间（较短）
+  const VOLUME_CONTROL_SHOW_DELAY = 500; // 显示前的等待时间（较长）
+  const VOLUME_CONTROL_HIDE_DELAY = 100; // 隐藏前的等待时间（较短）
   const VOLUME_CONTROL_TRANSITION = 300;
-  
+
   // 设置CSS变量以控制动画时长
-  document.documentElement.style.setProperty('--volume-control-transition', VOLUME_CONTROL_TRANSITION + 'ms');
+  document.documentElement.style.setProperty("--volume-control-transition", VOLUME_CONTROL_TRANSITION + "ms");
 
   // 工具函数
   function formatTime(seconds) {
-    if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+    if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
     const min = Math.floor(seconds / 60);
     const sec = Math.floor(seconds % 60);
-    return min + ':' + sec.toString().padStart(2, '0');
+    return min + ":" + sec.toString().padStart(2, "0");
   }
 
   function getAudioElement(elementId, src) {
     let audio = document.getElementById(elementId);
-    
+
     if (!audio) {
-      audio = document.createElement('audio');
+      audio = document.createElement("audio");
       audio.id = elementId;
-      audio.preload = 'none';
+      audio.preload = "none";
       audio.dataset.pendingSrc = src;
-      
-      let pool = document.getElementById('audio-pool');
+
+      let pool = document.getElementById("audio-pool");
       if (!pool) {
-        pool = document.createElement('div');
-        pool.id = 'audio-pool';
-        pool.style.display = 'none';
+        pool = document.createElement("div");
+        pool.id = "audio-pool";
+        pool.style.display = "none";
         document.body.appendChild(pool);
       }
       pool.appendChild(audio);
     }
-    
+
     // Lazy load
     if (!audio.src && audio.dataset.pendingSrc) {
       audio.src = audio.dataset.pendingSrc;
       delete audio.dataset.pendingSrc;
     }
-    
+
     return audio;
   }
 
@@ -55,35 +55,35 @@
       this.element = element;
       this.audioElement = audioElement;
       this.audioId = audioId;
-      this.state = 'stopped';
+      this.state = "stopped";
       this.startTime = parseFloat(element.dataset.start) || 0;
       this.endTime = parseFloat(element.dataset.end) || Infinity;
     }
 
     play(fromStart = false) {
-      if (fromStart || this.state === 'stopped') {
+      if (fromStart || this.state === "stopped") {
         this.audioElement.currentTime = this.startTime;
       }
       // 确保音量正确（从 GlobalPlaybackManager 获取）
       const storedVolume = GlobalPlaybackManager.getVolume(this.audioId);
       this.audioElement.volume = storedVolume;
-      
+
       this.audioElement.play();
-      this.state = 'playing';
+      this.state = "playing";
       this._updateUI();
       this._bindEvents();
     }
 
     pause() {
       this.audioElement.pause();
-      this.state = 'paused';
+      this.state = "paused";
       this._updateUI();
     }
 
     stop() {
       this.audioElement.pause();
       this.audioElement.currentTime = this.startTime;
-      this.state = 'stopped';
+      this.state = "stopped";
       this._updateUI();
       this._unbindEvents();
     }
@@ -91,23 +91,26 @@
     _bindEvents() {
       if (!this.audioElement._boundEvents) {
         const audioElement = this.audioElement;
-        
+
         // 事件处理器需要查找当前活动的 ClipState
-        audioElement.addEventListener('timeupdate', () => {
+        audioElement.addEventListener("timeupdate", () => {
           const activeClipState = audioElement._activeClipState;
-          if (activeClipState && activeClipState.state === 'playing' && 
-              audioElement.currentTime >= activeClipState.endTime) {
+          if (
+            activeClipState &&
+            activeClipState.state === "playing" &&
+            audioElement.currentTime >= activeClipState.endTime
+          ) {
             activeClipState.stop();
           }
         });
-        
-        audioElement.addEventListener('ended', () => {
+
+        audioElement.addEventListener("ended", () => {
           const activeClipState = audioElement._activeClipState;
-          if (activeClipState && activeClipState.state === 'playing') {
+          if (activeClipState && activeClipState.state === "playing") {
             activeClipState.stop();
           }
         });
-        
+
         audioElement._boundEvents = true;
       }
       // 标记当前活动的 ClipState
@@ -122,11 +125,11 @@
     }
 
     _updateUI() {
-      this.element.classList.remove('playing', 'paused');
-      if (this.state === 'playing') {
-        this.element.classList.add('playing');
-      } else if (this.state === 'paused') {
-        this.element.classList.add('paused');
+      this.element.classList.remove("playing", "paused");
+      if (this.state === "playing") {
+        this.element.classList.add("playing");
+      } else if (this.state === "paused") {
+        this.element.classList.add("paused");
       }
     }
   }
@@ -149,9 +152,9 @@
 
     createGlobalVolumeControl() {
       if (this._globalVolumeControl) return this._globalVolumeControl;
-      
-      const volumeControl = document.createElement('div');
-      volumeControl.className = 'audio-clip-volume-control hidden';
+
+      const volumeControl = document.createElement("div");
+      volumeControl.className = "audio-clip-volume-control hidden";
       volumeControl.innerHTML = `
         <div class="audio-clip-volume-slider-container">
           <span class="audio-clip-volume-icon"></span>
@@ -160,109 +163,109 @@
         </div>
       `;
       document.body.appendChild(volumeControl);
-      
+
       // FSM 状态机
       const VolumeControlFSM = {
-        state: 'hidden',
+        state: "hidden",
         currentClip: null,
         currentTask: null,
-        
+
         async delay(ms) {
           return new Promise((resolve, reject) => {
             const timer = setTimeout(resolve, ms);
             this.currentTask = () => {
               clearTimeout(timer);
-              reject(new Error('cancelled'));
+              reject(new Error("cancelled"));
             };
           });
         },
-        
+
         cancel() {
           if (this.currentTask) {
             this.currentTask();
             this.currentTask = null;
           }
         },
-        
+
         setState(newState) {
           if (this.state === newState) return;
           this.state = newState;
-          volumeControl.className = 'audio-clip-volume-control ' + newState;
-          if (newState === 'hidden') this.currentClip = null;
+          volumeControl.className = "audio-clip-volume-control " + newState;
+          if (newState === "hidden") this.currentClip = null;
         },
-        
+
         async runAutoFlow() {
           this.cancel();
           try {
-            this.setState('waiting');
+            this.setState("waiting");
             await this.delay(VOLUME_CONTROL_SHOW_DELAY);
-            this.setState('showing');
+            this.setState("showing");
             await this.delay(VOLUME_CONTROL_TRANSITION);
-            this.setState(volumeControl.matches(':hover') ? 'holding' : 'show');
+            this.setState(volumeControl.matches(":hover") ? "holding" : "show");
           } catch (err) {
             // cancelled
           }
         },
-        
+
         async runHideFlow() {
           this.cancel();
           try {
             await this.delay(VOLUME_CONTROL_HIDE_DELAY);
-            this.setState('hiding');
+            this.setState("hiding");
             await this.delay(VOLUME_CONTROL_TRANSITION);
-            this.setState('hidden');
+            this.setState("hidden");
           } catch (err) {
             // cancelled
           }
-        }
+        },
       };
-      
+
       volumeControl._fsm = VolumeControlFSM;
-      
+
       // 滑动条事件
-      const slider = volumeControl.querySelector('.audio-clip-volume-slider');
-      const valueDisplay = volumeControl.querySelector('.audio-clip-volume-value');
-      slider.addEventListener('input', (e) => {
+      const slider = volumeControl.querySelector(".audio-clip-volume-slider");
+      const valueDisplay = volumeControl.querySelector(".audio-clip-volume-value");
+      slider.addEventListener("input", (e) => {
         const value = parseInt(e.target.value);
-        e.target.style.setProperty('--volume-percent', value + '%');
-        valueDisplay.textContent = value + '%';
+        e.target.style.setProperty("--volume-percent", value + "%");
+        valueDisplay.textContent = value + "%";
         if (volumeControl._currentAudioElementId) {
           this.setVolume(volumeControl._currentAudioElementId, value / 100);
         }
       });
-      
+
       // 阻止冒泡
-      ['click', 'mousedown', 'dblclick'].forEach(evt => {
-        volumeControl.addEventListener(evt, e => e.stopPropagation());
+      ["click", "mousedown", "dblclick"].forEach((evt) => {
+        volumeControl.addEventListener(evt, (e) => e.stopPropagation());
       });
-      
+
       // 控制器事件
-      volumeControl.addEventListener('mouseenter', () => {
+      volumeControl.addEventListener("mouseenter", () => {
         VolumeControlFSM.cancel();
-        if (['show', 'showing', 'holding'].includes(VolumeControlFSM.state)) {
-          VolumeControlFSM.setState('holding');
+        if (["show", "showing", "holding"].includes(VolumeControlFSM.state)) {
+          VolumeControlFSM.setState("holding");
         }
       });
-      
-      volumeControl.addEventListener('mouseleave', (e) => {
-        const targetClip = e.relatedTarget?.closest('.audio-clip');
+
+      volumeControl.addEventListener("mouseleave", (e) => {
+        const targetClip = e.relatedTarget?.closest(".audio-clip");
         if (targetClip) {
           if (targetClip !== VolumeControlFSM.currentClip) {
             this.updateVolumeControl(targetClip);
             VolumeControlFSM.currentClip = targetClip;
           }
           VolumeControlFSM.runAutoFlow();
-        } else if (VolumeControlFSM.state === 'holding') {
+        } else if (VolumeControlFSM.state === "holding") {
           VolumeControlFSM.runHideFlow();
         }
       });
-      
+
       // 窗口失去焦点时强制隐藏
-      window.addEventListener('blur', () => {
+      window.addEventListener("blur", () => {
         VolumeControlFSM.cancel();
-        VolumeControlFSM.setState('hidden');
+        VolumeControlFSM.setState("hidden");
       });
-      
+
       this._globalVolumeControl = volumeControl;
       return volumeControl;
     },
@@ -270,7 +273,7 @@
     updateVolumeControl(clipElement) {
       const volumeControl = this._globalVolumeControl;
       if (!volumeControl) return;
-      
+
       // 获取该片段关联的 audio element ID
       // 优先从 clipState 获取，否则从 dataset 构造
       let audioElementId;
@@ -278,31 +281,31 @@
         audioElementId = clipElement._clipState.audioId;
       } else {
         const audioId = clipElement.dataset.audioId;
-        const isShared = clipElement.dataset.shared === 'true';
-        audioElementId = isShared ? ('clip-' + audioId) : ('clip-unique-' + audioId);
+        const isShared = clipElement.dataset.shared === "true";
+        audioElementId = isShared ? "clip-" + audioId : "clip-unique-" + audioId;
       }
-      
+
       volumeControl._currentAudioElementId = audioElementId;
-      
+
       const currentVolume = this.getVolume(audioElementId);
       const volumePercent = Math.round(currentVolume * 100);
-      const slider = volumeControl.querySelector('.audio-clip-volume-slider');
-      const valueDisplay = volumeControl.querySelector('.audio-clip-volume-value');
+      const slider = volumeControl.querySelector(".audio-clip-volume-slider");
+      const valueDisplay = volumeControl.querySelector(".audio-clip-volume-value");
       slider.value = volumePercent;
-      slider.style.setProperty('--volume-percent', volumePercent + '%');
-      valueDisplay.textContent = volumePercent + '%';
-      
+      slider.style.setProperty("--volume-percent", volumePercent + "%");
+      valueDisplay.textContent = volumePercent + "%";
+
       const rect = clipElement.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-      volumeControl.style.left = (rect.left + scrollLeft + rect.width / 2) + 'px';
-      volumeControl.style.top = (rect.bottom + scrollTop + 4) + 'px';
+      volumeControl.style.left = rect.left + scrollLeft + rect.width / 2 + "px";
+      volumeControl.style.top = rect.bottom + scrollTop + 4 + "px";
     },
 
     showVolumeControl(clipElement) {
       const volumeControl = this.createGlobalVolumeControl();
       const FSM = volumeControl._fsm;
-      
+
       if (FSM.currentClip !== clipElement) {
         this.updateVolumeControl(clipElement);
         FSM.currentClip = clipElement;
@@ -313,160 +316,237 @@
     hideVolumeControl(e) {
       const volumeControl = this._globalVolumeControl;
       if (!volumeControl) return;
-      
+
       const FSM = volumeControl._fsm;
-      
+
       if (e && e.relatedTarget && volumeControl.contains(e.relatedTarget)) {
         FSM.cancel();
-        FSM.setState('holding');
+        FSM.setState("holding");
         return;
       }
-      
-      if (FSM.state === 'waiting') {
+
+      if (FSM.state === "waiting") {
         FSM.cancel();
-        FSM.setState('hidden');
-      } else if (['show', 'holding'].includes(FSM.state)) {
+        FSM.setState("hidden");
+      } else if (["show", "holding"].includes(FSM.state)) {
         FSM.runHideFlow();
       }
     },
 
     switchTo(newPlayer, type) {
       if (this.currentPlaying && this.currentPlaying !== newPlayer) {
-        if (this.currentPlayingType === 'plyr') {
+        if (this.currentPlayingType === "plyr") {
           this.currentPlaying.pause();
-        } else if (this.currentPlayingType === 'clip') {
+        } else if (this.currentPlayingType === "clip") {
           this.currentPlaying.stop();
         }
       }
-      
-      if (type === 'clip') {
-        document.querySelectorAll('.audio-clip').forEach(el => {
+
+      if (type === "clip") {
+        document.querySelectorAll(".audio-clip").forEach((el) => {
           if (el._clipState && el._clipState !== newPlayer) {
-            el._clipState.state = 'stopped';
+            el._clipState.state = "stopped";
             el._clipState._updateUI();
           }
         });
       }
-      
+
       this.currentPlaying = newPlayer;
       this.currentPlayingType = type;
     },
 
     showError(container, message) {
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'plyr-error';
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "plyr-error";
       errorDiv.innerHTML = `
         <div class="plyr-error-icon"></div>
         <div class="plyr-error-message">Unavailable</div>
       `;
-      const plyrElement = container.querySelector('.plyr');
+      const plyrElement = container.querySelector(".plyr");
       if (plyrElement) plyrElement.remove();
       container.appendChild(errorDiv);
     },
 
     initPlyrPlayer(container) {
-      const videoElement = container.querySelector('audio, video, [data-plyr-provider]');
+      const videoElement = container.querySelector("audio, video, [data-plyr-provider]");
       if (!videoElement) return;
-      
+
+      // 获取起始/结束时间
+      const startTime = parseFloat(videoElement.dataset.start) || 0;
+      const endTime = parseFloat(videoElement.dataset.end) || 0;
+      const isYouTube = videoElement.dataset.plyrProvider === "youtube";
+      const isVimeo = videoElement.dataset.plyrProvider === "vimeo";
+      const markerPoints = [];
+      if (startTime > 0) markerPoints.push({ time: startTime, label: "Start" });
+      if (endTime > 0) markerPoints.push({ time: endTime, label: "End" });
+
       try {
         const player = new Plyr(videoElement, {
-          controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
-          settings: ['quality', 'speed'],
-          speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }
+          controls: ["play-large", "play", "progress", "current-time", "mute", "volume", "settings", "fullscreen"],
+          settings: ["quality", "speed"],
+          speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+          invertTime: false,
+          toggleInvert: true,
+          markers: markerPoints.length ? { enabled: true, points: markerPoints } : { enabled: false, points: [] },
         });
-        
+
         // 统一的错误处理函数
         const handleError = (source, details) => {
-          if (container.querySelector('.plyr-error')) return;
+          if (container.querySelector(".plyr-error")) return;
           console.error(`[Media Player Error - ${source}]`, details);
           this.showError(container);
         };
-        
-        player.on('ready', () => {
-          // Player ready
+
+        // 处理起始时间（确保时间与进度条同步）
+        let hasSeekToStart = false;
+        const syncStartPosition = (force = false) => {
+          if (startTime <= 0) return;
+          if (hasSeekToStart && !force) return;
+          if (!isFinite(player.duration) || player.duration <= 0) return;
+          if (player.embed) {
+            if (typeof player.embed.seekTo === "function") {
+              player.embed.seekTo(startTime, true);
+            }
+            if (typeof player.embed.setCurrentTime === "function") {
+              player.embed.setCurrentTime(startTime);
+            }
+          }
+          setTimeout(() => {
+            player.currentTime = startTime;
+            hasSeekToStart = true;
+          }, 50);
+        };
+
+        // 片段播放控制：仅在区间内启用 end 暂停
+        let clipGuardEnabled = endTime > 0 && startTime < endTime;
+        const updateClipGuard = () => {
+          if (endTime <= 0) {
+            clipGuardEnabled = false;
+            return;
+          }
+          const t = player.currentTime;
+          clipGuardEnabled = t >= startTime && t < endTime;
+        };
+
+        const checkEndTime = () => {
+          if (!clipGuardEnabled) return;
+          if (player.currentTime >= endTime) {
+            player.pause();
+          }
+        };
+
+        player.on("ready", () => {
+          if (startTime > 0) {
+            syncStartPosition();
+          }
         });
-        
-        player.on('play', () => {
-          this.switchTo(player, 'plyr');
+
+        player.on("play", () => {
+          this.switchTo(player, "plyr");
+          if (!hasSeekToStart && startTime > 0) {
+            syncStartPosition(true);
+          }
+          if (endTime > 0) updateClipGuard();
         });
-        
-        player.on('error', (event) => {
-          handleError('Plyr', event);
+
+        // 当 duration 可用时再同步一次进度条
+        player.on("loadedmetadata", () => syncStartPosition());
+        player.on("durationchange", () => syncStartPosition());
+        player.on("canplay", () => syncStartPosition());
+
+        // 监听时间更新，处理结束时间
+        if (endTime > 0) {
+          player.on("timeupdate", () => {
+            if (!clipGuardEnabled) updateClipGuard();
+            checkEndTime();
+          });
+        }
+
+        // 监听 seek，区间内才启用 end 暂停
+        if (endTime > 0) {
+          player.on("seeked", () => {
+            updateClipGuard();
+            checkEndTime();
+          });
+        }
+
+        player.on("error", (event) => {
+          handleError("Plyr", event);
         });
-        
-        if (videoElement.tagName === 'AUDIO' || videoElement.tagName === 'VIDEO') {
-          videoElement.addEventListener('error', (e) => {
-            handleError('Native Media', {
+
+        if (videoElement.tagName === "AUDIO" || videoElement.tagName === "VIDEO") {
+          videoElement.addEventListener("error", (e) => {
+            handleError("Native Media", {
               error: videoElement.error,
               errorCode: videoElement.error?.code,
-              networkState: videoElement.networkState
+              networkState: videoElement.networkState,
             });
           });
-          
-          videoElement.addEventListener('loadstart', () => {
+
+          videoElement.addEventListener("loadstart", () => {
             setTimeout(() => {
               if (videoElement.networkState === 3 && !videoElement.src) {
-                handleError('State Check', {
-                  reason: 'NETWORK_NO_SOURCE',
-                  networkState: videoElement.networkState
+                handleError("State Check", {
+                  reason: "NETWORK_NO_SOURCE",
+                  networkState: videoElement.networkState,
                 });
               }
             }, 500);
           });
-          
-          [1000, 2000].forEach(delay => {
+
+          [1000, 2000, 3000, 5000].forEach((delay) => {
             setTimeout(() => {
-              if (container.querySelector('.plyr-error')) return;
-              
+              if (container.querySelector(".plyr-error")) return;
+
               if (videoElement.networkState === 3 && !videoElement.src) {
-                handleError('Periodic Check', {
-                  reason: 'NETWORK_NO_SOURCE detected',
-                  delay: delay
+                handleError("Periodic Check", {
+                  reason: "NETWORK_NO_SOURCE detected",
+                  delay: delay,
                 });
               } else if (videoElement.error) {
-                handleError('Periodic Check', {
-                  reason: 'Media error detected',
-                  errorCode: videoElement.error.code
+                handleError("Periodic Check", {
+                  reason: "Media error detected",
+                  errorCode: videoElement.error.code,
                 });
               }
             }, delay);
           });
         }
-        
+
         container._plyrInstance = player;
       } catch (error) {
-        console.error('[Media Player Init Failed]', error);
+        console.error("[Media Player Init Failed]", error);
         this.showError(container);
       }
     },
 
     getOrCreateClipState(clipElement) {
       if (clipElement._clipState) return clipElement._clipState;
-      
+
       const audioId = clipElement.dataset.audioId;
       const src = clipElement.dataset.src;
-      const isShared = clipElement.dataset.shared === 'true';
-      const audioElementId = isShared ? ('clip-' + audioId) : ('clip-unique-' + audioId);
+      const isShared = clipElement.dataset.shared === "true";
+      const audioElementId = isShared ? "clip-" + audioId : "clip-unique-" + audioId;
       const audioElement = getAudioElement(audioElementId, src);
-      
+
       // 应用存储的音量
       const storedVolume = this.getVolume(audioElementId);
       audioElement.volume = storedVolume;
-      
+
       clipElement._clipState = new ClipState(clipElement, audioElement, audioElementId);
       return clipElement._clipState;
     },
 
     handleClipClick(clipElement) {
       const clipState = this.getOrCreateClipState(clipElement);
-      
-      if (clipState.state === 'stopped') {
-        this.switchTo(clipState, 'clip');
+
+      if (clipState.state === "stopped") {
+        this.switchTo(clipState, "clip");
         clipState.play(true);
-      } else if (clipState.state === 'playing') {
+      } else if (clipState.state === "playing") {
         clipState.pause();
-      } else if (clipState.state === 'paused') {
-        this.switchTo(clipState, 'clip');
+      } else if (clipState.state === "paused") {
+        this.switchTo(clipState, "clip");
         clipState.play(false);
       }
     },
@@ -480,43 +560,43 @@
           this.currentPlayingType = null;
         }
       }
-    }
+    },
   };
 
   // 初始化
   function init() {
     // Plyr 播放器
-    document.querySelectorAll('.plyr-container').forEach(container => {
+    document.querySelectorAll(".plyr-container").forEach((container) => {
       GlobalPlaybackManager.initPlyrPlayer(container);
     });
 
     // 音频片段
-    document.querySelectorAll('.audio-clip').forEach(clip => {
+    document.querySelectorAll(".audio-clip").forEach((clip) => {
       const self = GlobalPlaybackManager;
-      
-      clip.addEventListener('mouseenter', () => self.showVolumeControl(clip));
-      clip.addEventListener('mouseleave', (e) => self.hideVolumeControl(e));
-      clip.addEventListener('click', (e) => {
+
+      clip.addEventListener("mouseenter", () => self.showVolumeControl(clip));
+      clip.addEventListener("mouseleave", (e) => self.hideVolumeControl(e));
+      clip.addEventListener("click", (e) => {
         e.preventDefault();
         self.handleClipClick(clip);
       });
-      clip.addEventListener('dblclick', (e) => {
+      clip.addEventListener("dblclick", (e) => {
         e.preventDefault();
         self.handleClipStop(clip);
       });
 
       // 长按停止
       let longPressTimer = null;
-      clip.addEventListener('mousedown', () => {
+      clip.addEventListener("mousedown", () => {
         longPressTimer = setTimeout(() => self.handleClipStop(clip), 500);
       });
-      clip.addEventListener('mouseup', () => {
+      clip.addEventListener("mouseup", () => {
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
         }
       });
-      clip.addEventListener('mouseleave', () => {
+      clip.addEventListener("mouseleave", () => {
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
@@ -525,8 +605,8 @@
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }
