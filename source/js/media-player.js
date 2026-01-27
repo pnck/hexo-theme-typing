@@ -9,6 +9,7 @@
   const VOLUME_CONTROL_SHOW_DELAY = 500; // 显示前的等待时间（较长）
   const VOLUME_CONTROL_HIDE_DELAY = 100; // 隐藏前的等待时间（较短）
   const VOLUME_CONTROL_TRANSITION = 300;
+  const CLIP_FADE_DURATION_MS = 200;
 
   // 设置CSS变量以控制动画时长
   document.documentElement.style.setProperty("--volume-control-transition", VOLUME_CONTROL_TRANSITION + "ms");
@@ -58,6 +59,7 @@
       this.state = "stopped";
       this.startTime = parseFloat(element.dataset.start) || 0;
       this.endTime = parseFloat(element.dataset.end) || Infinity;
+      this.fadeEnabled = element.dataset.fade === "true";
     }
 
     play(fromStart = false) {
@@ -68,6 +70,13 @@
       const storedVolume = GlobalPlaybackManager.getVolume(this.audioId);
       this.audioElement.volume = storedVolume;
 
+      GlobalPlaybackManager.cancelFade(this.audioElement);
+      if (this.fadeEnabled) {
+        GlobalPlaybackManager.fadeIn(this.audioElement);
+      } else {
+        GlobalPlaybackManager.resetFade(this.audioElement);
+      }
+
       this.audioElement.play();
       this.state = "playing";
       this._updateUI();
@@ -75,12 +84,32 @@
     }
 
     pause() {
+      if (this.fadeEnabled) {
+        GlobalPlaybackManager.fadeOut(this.audioElement, () => {
+          if (this.audioElement._activeClipState !== this) return;
+          this.audioElement.pause();
+          this.state = "paused";
+          this._updateUI();
+        });
+        return;
+      }
       this.audioElement.pause();
       this.state = "paused";
       this._updateUI();
     }
 
     stop() {
+      if (this.fadeEnabled) {
+        GlobalPlaybackManager.fadeOut(this.audioElement, () => {
+          if (this.audioElement._activeClipState !== this) return;
+          this.audioElement.pause();
+          this.audioElement.currentTime = this.startTime;
+          this.state = "stopped";
+          this._updateUI();
+          this._unbindEvents();
+        });
+        return;
+      }
       this.audioElement.pause();
       this.audioElement.currentTime = this.startTime;
       this.state = "stopped";
@@ -139,6 +168,8 @@
     currentPlaying: null,
     currentPlayingType: null,
     volumes: new Map(),
+    fadeControllers: new Map(),
+    audioContext: null,
 
     getVolume(audioElementId) {
       return this.volumes.has(audioElementId) ? this.volumes.get(audioElementId) : 1.0;
@@ -148,6 +179,114 @@
       this.volumes.set(audioElementId, volume);
       const audio = document.getElementById(audioElementId);
       if (audio) audio.volume = volume;
+    },
+
+    ensureFadeController(audioElement) {
+      if (!audioElement) return null;
+      const existing = this.fadeControllers.get(audioElement);
+      if (existing) return existing;
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+
+      if (!this.audioContext) {
+        this.audioContext = new AudioContextClass();
+      }
+
+      const context = this.audioContext;
+      let sourceNode = audioElement._mediaSourceNode;
+      if (!sourceNode) {
+        sourceNode = context.createMediaElementSource(audioElement);
+        audioElement._mediaSourceNode = sourceNode;
+      }
+
+      const gainNode = context.createGain();
+      gainNode.gain.value = 1;
+      sourceNode.connect(gainNode);
+      gainNode.connect(context.destination);
+
+      const controller = {
+        context,
+        gainNode,
+        token: 0,
+        timeoutId: null,
+      };
+
+      this.fadeControllers.set(audioElement, controller);
+      return controller;
+    },
+
+    cancelFadeTimer(controller) {
+      if (controller && controller.timeoutId) {
+        clearTimeout(controller.timeoutId);
+        controller.timeoutId = null;
+      }
+    },
+
+    cancelFade(audioElement) {
+      const controller = this.fadeControllers.get(audioElement);
+      if (!controller) return;
+      controller.token += 1;
+      this.cancelFadeTimer(controller);
+      const now = controller.context.currentTime;
+      controller.gainNode.gain.cancelScheduledValues(now);
+      controller.gainNode.gain.setValueAtTime(controller.gainNode.gain.value, now);
+    },
+
+    resetFade(audioElement) {
+      const controller = this.fadeControllers.get(audioElement);
+      if (!controller) return;
+      this.cancelFadeTimer(controller);
+      controller.token += 1;
+      const now = controller.context.currentTime;
+      controller.gainNode.gain.cancelScheduledValues(now);
+      controller.gainNode.gain.setValueAtTime(1, now);
+    },
+
+    fadeIn(audioElement) {
+      const controller = this.ensureFadeController(audioElement);
+      if (!controller) return;
+
+      if (controller.context.state === "suspended") {
+        controller.context.resume();
+      }
+
+      this.cancelFadeTimer(controller);
+      controller.token += 1;
+
+      const now = controller.context.currentTime;
+      const durationSec = CLIP_FADE_DURATION_MS / 1000;
+      controller.gainNode.gain.cancelScheduledValues(now);
+      controller.gainNode.gain.setValueAtTime(0, now);
+      controller.gainNode.gain.linearRampToValueAtTime(1, now + durationSec);
+    },
+
+    fadeOut(audioElement, onComplete) {
+      const controller = this.ensureFadeController(audioElement);
+      if (!controller) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      if (controller.context.state === "suspended") {
+        controller.context.resume();
+      }
+
+      this.cancelFadeTimer(controller);
+      controller.token += 1;
+      const token = controller.token;
+
+      const now = controller.context.currentTime;
+      const durationSec = CLIP_FADE_DURATION_MS / 1000;
+      controller.gainNode.gain.cancelScheduledValues(now);
+      controller.gainNode.gain.setValueAtTime(controller.gainNode.gain.value, now);
+      controller.gainNode.gain.linearRampToValueAtTime(0, now + durationSec);
+
+      controller.timeoutId = setTimeout(() => {
+        if (controller.token !== token) return;
+        controller.timeoutId = null;
+        if (onComplete) onComplete();
+      }, CLIP_FADE_DURATION_MS);
     },
 
     createGlobalVolumeControl() {
@@ -374,8 +513,6 @@
       // 获取起始/结束时间
       const startTime = parseFloat(videoElement.dataset.start) || 0;
       const endTime = parseFloat(videoElement.dataset.end) || 0;
-      const isYouTube = videoElement.dataset.plyrProvider === "youtube";
-      const isVimeo = videoElement.dataset.plyrProvider === "vimeo";
       const markerPoints = [];
       if (startTime > 0) markerPoints.push({ time: startTime, label: "Start" });
       if (endTime > 0) markerPoints.push({ time: endTime, label: "End" });
