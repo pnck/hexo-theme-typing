@@ -534,6 +534,34 @@
           this.showError(container);
         };
 
+        const bindMarkerInteractions = () => {
+          if (!markerPoints.length) return;
+          const markers = container.querySelectorAll(".plyr__progress__marker");
+          if (!markers.length) return;
+          markers.forEach((marker, index) => {
+            const point = markerPoints[index];
+            if (!point) return;
+            marker.dataset.time = String(point.time);
+            marker.setAttribute("role", "button");
+            marker.setAttribute("tabindex", "0");
+          });
+          const progressContainer = container.querySelector(".plyr__progress__container");
+          if (!progressContainer || progressContainer._markerBound) return;
+          progressContainer._markerBound = true;
+          const handleMarkerActivate = (event) => {
+            const marker = event.target.closest(".plyr__progress__marker");
+            if (!marker || !marker.dataset.time) return;
+            const targetTime = parseFloat(marker.dataset.time);
+            if (!isFinite(targetTime)) return;
+            player.currentTime = targetTime;
+          };
+          progressContainer.addEventListener("click", handleMarkerActivate);
+          progressContainer.addEventListener("keydown", (event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            handleMarkerActivate(event);
+          });
+        };
+
         // 处理起始时间（确保时间与进度条同步）
         let hasSeekToStart = false;
         const syncStartPosition = (force = false) => {
@@ -576,6 +604,7 @@
           if (startTime > 0) {
             syncStartPosition();
           }
+          setTimeout(bindMarkerInteractions, 0);
         });
 
         player.on("play", () => {

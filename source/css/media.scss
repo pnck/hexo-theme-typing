@@ -99,6 +99,17 @@
   z-index: 100 !important; /* 确保菜单在最上层 */
 }
 
+/* 进度条标记点可点击 */
+.plyr-container .plyr__progress__marker {
+  transform-origin: center;
+  transform: translate(-50%, -50%) scale(1.2);
+  
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.6) translateY(-10%);
+  }
+  cursor: pointer;
+}
+
 /* 时间显示 - 可点击切换正向/倒计时 */
 .plyr-container .plyr__time {
   cursor: pointer;
@@ -110,6 +121,7 @@
   background-color: var(--plyr-color-main);
   opacity: 1;
   border-radius: var(--plyr-control-radius, 4px);
+  color: #fff;
 }
 
 /* ============================================
