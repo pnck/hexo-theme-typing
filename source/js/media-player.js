@@ -356,8 +356,8 @@
       const errorDiv = document.createElement('div');
       errorDiv.className = 'plyr-error';
       errorDiv.innerHTML = `
-        <div class="plyr-error-icon">⚠️</div>
-        <div class="plyr-error-message">${message}</div>
+        <div class="plyr-error-icon"></div>
+        <div class="plyr-error-message">Unavailable</div>
       `;
       const plyrElement = container.querySelector('.plyr');
       if (plyrElement) plyrElement.remove();
@@ -375,11 +375,68 @@
           speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }
         });
         
-        player.on('play', () => this.switchTo(player, 'plyr'));
+        // 统一的错误处理函数
+        const handleError = (source, details) => {
+          if (container.querySelector('.plyr-error')) return;
+          console.error(`[Media Player Error - ${source}]`, details);
+          this.showError(container);
+        };
+        
+        player.on('ready', () => {
+          // Player ready
+        });
+        
+        player.on('play', () => {
+          this.switchTo(player, 'plyr');
+        });
+        
+        player.on('error', (event) => {
+          handleError('Plyr', event);
+        });
+        
+        if (videoElement.tagName === 'AUDIO' || videoElement.tagName === 'VIDEO') {
+          videoElement.addEventListener('error', (e) => {
+            handleError('Native Media', {
+              error: videoElement.error,
+              errorCode: videoElement.error?.code,
+              networkState: videoElement.networkState
+            });
+          });
+          
+          videoElement.addEventListener('loadstart', () => {
+            setTimeout(() => {
+              if (videoElement.networkState === 3 && !videoElement.src) {
+                handleError('State Check', {
+                  reason: 'NETWORK_NO_SOURCE',
+                  networkState: videoElement.networkState
+                });
+              }
+            }, 500);
+          });
+          
+          [1000, 2000].forEach(delay => {
+            setTimeout(() => {
+              if (container.querySelector('.plyr-error')) return;
+              
+              if (videoElement.networkState === 3 && !videoElement.src) {
+                handleError('Periodic Check', {
+                  reason: 'NETWORK_NO_SOURCE detected',
+                  delay: delay
+                });
+              } else if (videoElement.error) {
+                handleError('Periodic Check', {
+                  reason: 'Media error detected',
+                  errorCode: videoElement.error.code
+                });
+              }
+            }, delay);
+          });
+        }
+        
         container._plyrInstance = player;
       } catch (error) {
-        console.error('Plyr初始化失败:', error);
-        this.showError(container, '播放器加载失败');
+        console.error('[Media Player Init Failed]', error);
+        this.showError(container);
       }
     },
 

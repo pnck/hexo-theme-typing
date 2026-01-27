@@ -109,32 +109,50 @@
   justify-content: center;
   padding: 60px 20px;
   background: var(--bg-color-code-light);
-  border: 1px dashed var(--text-color-fade);
   border-radius: 6px;
   margin-top: 12px;
   min-height: 200px;
 }
 
 .plyr-error-icon {
-  font-size: 3em;
+  width: 48px;
+  height: 48px;
   margin-bottom: 12px;
-  opacity: 0.6;
+  opacity: 0.4;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23999"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .plyr-error-message {
   color: var(--text-color-fade);
   font-size: 0.9em;
   text-align: center;
+  font-weight: 400;
 }
 
 .media-error {
   padding: 20px;
-  background: var(--bg-color-code-light);
-  border: 1px dashed #e74c3c;
+  background: #fff5f5;
+  border: 2px solid #e74c3c;
   border-radius: 6px;
   color: #e74c3c;
   text-align: center;
   margin: 1em 0;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.15);
+}
+
+/* 视频容器错误状态 - hover 时显示红框并取消交互效果 */
+.plyr-container[data-type="video"]:has(.plyr-error):hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transform: none !important;
+  border-color: #e74c3c !important;
+}
+
+/* 音频容器错误状态 - hover 时显示红框 */
+.plyr-container[data-type="audio"]:has(.plyr-error):hover {
+  border-color: #e74c3c !important;
 }
 
 /* ============================================
