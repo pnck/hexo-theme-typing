@@ -730,14 +730,20 @@
   };
 
   // 初始化
-  function init() {
+  function init(root = document) {
     // Plyr 播放器
-    document.querySelectorAll(".plyr-container").forEach((container) => {
+    if (typeof Plyr !== "undefined") {
+      root.querySelectorAll(".plyr-container").forEach((container) => {
+      if (container._plyrInstance) return;
       GlobalPlaybackManager.initPlyrPlayer(container);
-    });
+      });
+    }
 
     // 音频片段
-    document.querySelectorAll(".audio-clip").forEach((clip) => {
+    root.querySelectorAll(".audio-clip").forEach((clip) => {
+      if (clip._mediaBound) return;
+      clip._mediaBound = true;
+
       const self = GlobalPlaybackManager;
 
       clip.addEventListener("mouseenter", () => self.showVolumeControl(clip));
@@ -776,4 +782,9 @@
   } else {
     init();
   }
+
+  // 解密后重新初始化媒体组件
+  document.addEventListener("DecryptEnded", () => {
+    init(document);
+  });
 })();
