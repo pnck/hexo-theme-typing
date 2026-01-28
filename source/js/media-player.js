@@ -295,12 +295,12 @@
       const volumeControl = document.createElement("div");
       volumeControl.className = "audio-clip-volume-control hidden";
       volumeControl.innerHTML = `
-        <div class="audio-clip-volume-slider-container">
-          <span class="audio-clip-volume-icon"></span>
-          <input type="range" class="audio-clip-volume-slider" min="0" max="100" value="100" style="--volume-percent: 100%"/>
-          <span class="audio-clip-volume-value">100%</span>
-        </div>
-      `;
+				<div class="audio-clip-volume-slider-container">
+					<span class="audio-clip-volume-icon"></span>
+					<input type="range" class="audio-clip-volume-slider" min="0" max="100" value="100" style="--volume-percent: 100%"/>
+					<span class="audio-clip-volume-value">100%</span>
+				</div>
+			`;
       document.body.appendChild(volumeControl);
 
       // FSM 状态机
@@ -498,9 +498,9 @@
       const errorDiv = document.createElement("div");
       errorDiv.className = "plyr-error";
       errorDiv.innerHTML = `
-        <div class="plyr-error-icon"></div>
-        <div class="plyr-error-message">Unavailable</div>
-      `;
+				<div class="plyr-error-icon"></div>
+				<div class="plyr-error-message">Unavailable</div>
+			`;
       const plyrElement = container.querySelector(".plyr");
       if (plyrElement) plyrElement.remove();
       container.appendChild(errorDiv);
@@ -731,11 +731,14 @@
 
   // 初始化
   function init(root = document) {
+    if (!root || typeof root.querySelectorAll !== "function") {
+      root = document;
+    }
     // Plyr 播放器
     if (typeof Plyr !== "undefined") {
       root.querySelectorAll(".plyr-container").forEach((container) => {
-      if (container._plyrInstance) return;
-      GlobalPlaybackManager.initPlyrPlayer(container);
+        if (container._plyrInstance) return;
+        GlobalPlaybackManager.initPlyrPlayer(container);
       });
     }
 
@@ -778,7 +781,7 @@
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", () => init(document));
   } else {
     init();
   }
