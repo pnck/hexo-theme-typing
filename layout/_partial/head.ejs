@@ -42,12 +42,57 @@
     
   <!-- UMami Self-Host Analytics -->
   <script>
-    if (!(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    (function() {
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') return;
+
       var script = document.createElement('script');
       script.src = 'https://umami.p-vm.dev/script.js';
       script.async = true;
       script.dataset.websiteId = '26dd5264-c0d5-4094-b2e9-3eb7698de914';
+
+      // --- auto-track interactive element clicks ---
+      var SELECTOR = 'a, button, input[type="submit"], input[type="button"], [role="button"], [data-umami-event]';
+
+      function trackClick(e) {
+        var el = e.target.closest(SELECTOR);
+        if (!el) return;
+        // respect elements that opt out
+        if (el.hasAttribute('data-umami-ignore')) return;
+
+        var tag = el.tagName.toLowerCase();
+        var text = (el.textContent || el.value || '').replace(/\s+/g, ' ').trim().substring(0, 100);
+        var data = { tag: tag, text: text };
+
+        if (el.id) data.id = el.id;
+        if (el.className && typeof el.className === 'string') {
+          data.class = el.className.split(/\s+/).filter(Boolean).slice(0, 3).join(' ');
+        }
+
+        // classify link type
+        if (el.href && tag === 'a') {
+          var href = el.getAttribute('href') || '';
+          if (href.startsWith('#')) {
+            data.type = 'anchor';
+          } else if (el.hostname && el.hostname !== window.location.hostname) {
+            data.type = 'outbound';
+            data.href = href;
+          } else {
+            data.type = 'internal';
+            data.href = href;
+          }
+        }
+
+        var eventName = el.getAttribute('data-umami-event') || 'click';
+        umami.track(eventName, data);
+      }
+
+      script.onload = function() {
+        if (window.umami) {
+          document.addEventListener('click', trackClick, true);
+        }
+      };
+
       document.head.appendChild(script);
-    }
+    })();
   </script>
 </head>
